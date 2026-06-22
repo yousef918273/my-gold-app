@@ -15,9 +15,7 @@
 <meta property="og:description" content="تابع أسعار الذهب عيار 24، 21، 18 والعملات لحظة بلحظة">
 <meta property="og:image" content="logo.png">
 <meta property="og:type" content="website">
-<div id="auth-container">
-  <button id="login-btn" onclick="openLoginModal()">تسجيل الدخول</button>
-</div>
+
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
 :root{
@@ -45,7 +43,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 #refresh-btn{background:none;border:1px solid var(--border);color:var(--gold);padding:5px 12px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem;transition:background 0.2s;white-space:nowrap;}
 #refresh-btn:hover{background:var(--border);}
 #refresh-btn.loading{opacity:0.5;pointer-events:none;}
-
+<div id="auth-container">
+  <button id="login-btn" onclick="openLoginModal()">تسجيل الدخول</button>
+</div>
 .ticker-wrap{overflow:hidden;background:#0a0a0a;border-bottom:1px solid var(--border);padding:7px 0;}
 .ticker{display:flex;gap:36px;animation:scroll-rtl 40s linear infinite;white-space:nowrap;}
 .ticker:hover{animation-play-state:paused;}
