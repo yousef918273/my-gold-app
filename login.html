@@ -183,7 +183,7 @@ body{
 <body>
 
 <div class="login-card">
-  <a href="سعر_النهارده.html" class="logo-link">
+  <a href="index.html" class="logo-link">
     <div class="logo">سعر <span>النهارده</span><small>أسعار الذهب والعملات لحظة بلحظة</small></div>
   </a>
 
@@ -226,7 +226,7 @@ let isLogin = true;
 // لو المستخدم داخل بالفعل، ارجعه للصفحة الرئيسية
 const { data: { session } } = await supabase.auth.getSession();
 if (session) {
-  window.location.href = 'سعر_النهارده.html';
+  window.location.href = 'index.html';
 }
 
 function showError(msg) {
@@ -287,7 +287,7 @@ window.handleAction = async function () {
       if (error) throw error;
       showSuccess('تم تسجيل الدخول! جاري التحويل...');
       setTimeout(() => {
-        window.location.href = 'سعر_النهارده.html';
+        window.location.href = 'index.html';
       }, 800);
     } else {
       const { data, error } = await supabase.auth.signUp({ email, password });
@@ -299,7 +299,7 @@ window.handleAction = async function () {
       }
       showSuccess('تم إنشاء الحساب! جاري التحويل...');
       setTimeout(() => {
-        window.location.href = 'سعر_النهارده.html';
+        window.location.href = 'index.html';
       }, 800);
     }
   } catch (err) {
