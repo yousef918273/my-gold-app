@@ -40,17 +40,7 @@ header {
 }
 
 /* تأكد من إضافة هذا التنسيق للزر الجديد */
-#login-btn {
-  background: transparent;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  padding: 4px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: 'Cairo', sans-serif;
-  font-size: 0.75rem;
-  margin-left: 5px;
-}
+
 header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--dark);z-index:100;}
 .logo{font-size:1.1rem;font-weight:900;color:var(--gold);}
 .logo span{color:var(--text);}
@@ -66,7 +56,22 @@ header{display:flex;align-items:center;justify-content:space-between;padding:14p
 .ticker-item .val{color:var(--gold-lt);font-weight:600;}
 .ticker-item .val.s{color:var(--silver-lt);}
 @keyframes scroll-rtl{0%{transform:translateX(-50%);}100%{transform:translateX(0);}}
-
+#login-btn {
+  background: transparent;
+  border: 1px solid var(--gold);
+  color: var(--gold);
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  font-size: 0.8rem;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+#login-btn:hover {
+  background: var(--gold);
+  color: #000;
+}
 .tabs{display:flex;gap:0;border-bottom:1px solid var(--border);background:var(--dark);position:sticky;top:53px;z-index:99;overflow-x:auto;}
 .tab{flex:1;min-width:70px;padding:11px 6px;text-align:center;font-size:0.8rem;font-weight:700;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;}
 .tab.active{color:var(--gold);border-bottom-color:var(--gold);}
