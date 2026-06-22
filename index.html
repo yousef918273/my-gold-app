@@ -24,38 +24,12 @@
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--dark);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;padding-bottom:100px;}
 
-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:10px 14px;
-  border-bottom:1px solid var(--border);
-  position:sticky;
-  top:0;
-  background:var(--dark);
-  z-index:100;
-  gap:8px;
-}
+header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--dark);z-index:100;}
 .logo{font-size:1.1rem;font-weight:900;color:var(--gold);}
 .logo span{color:var(--text);}
-
-#auth-container{ display:flex; align-items:center; }
-#login-btn{
-  background:none;
-  border:1px solid var(--gold);
-  color:var(--gold);
-  padding:5px 12px;
-  border-radius:6px;
-  cursor:pointer;
-  font-family:'Cairo',sans-serif;
-  font-size:0.75rem;
-  font-weight:700;
-  transition:background 0.2s,color 0.2s;
-  white-space:nowrap;
-}
-#login-btn:hover{background:var(--gold);color:#000;}
-
-#last-update{font-size:0.65rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;text-align:center;flex:1;}
+#last-update{font-size:0.65rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;text-align:center;}
+#login-btn{background:none;border:1px solid var(--border);color:var(--gold);padding:5px 12px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem;transition:background 0.2s;white-space:nowrap;}
+#login-btn:hover{background:var(--border);}
 #refresh-btn{background:none;border:1px solid var(--border);color:var(--gold);padding:5px 12px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem;transition:background 0.2s;white-space:nowrap;}
 #refresh-btn:hover{background:var(--border);}
 #refresh-btn.loading{opacity:0.5;pointer-events:none;}
@@ -261,30 +235,17 @@ header{
 .error-box{background:#1a0a0a;border:1px solid #4a1a1a;border-radius:10px;padding:11px 13px;color:var(--red);font-size:0.8rem;margin-bottom:12px;display:none;}
 .ad-slot{background:#111;border:1px dashed var(--border);border-radius:8px;padding:16px;text-align:center;color:var(--muted);font-size:0.7rem;margin-bottom:18px;}
 footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;border-top:1px solid var(--border);line-height: 1.6;}
-
-@media (max-width: 480px) {
-  header{padding:8px 10px;}
-  .logo{font-size:1rem;}
-  #login-btn{padding:4px 8px;font-size:0.7rem;}
-  #refresh-btn{padding:4px 10px;font-size:0.75rem;}
-  .tab{padding:9px 4px;font-size:0.75rem;}
-  .dollar-card .dval{font-size:1rem;}
-  .info-card .val{font-size:0.9rem;}
-}
 </style>
 
-<!-- Google AdSense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3338501443809961" crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
 </head>
 <body>
 
 <header>
   <div class="logo">سعر <span>النهارده</span></div>
-  <div id="auth-container">
-    <button id="login-btn" onclick="openLoginModal()">تسجيل الدخول</button>
-  </div>
-  <div id="last-update">جار التحميل...</div>
+<div id="last-update">جار التحميل...</div>
   <div style="display: flex; gap: 6px; align-items: center;">
+    <button id="login-btn" onclick="openLoginModal()">تسجيل الدخول</button>
     <button id="refresh-btn" onclick="loadAll()">🔄 تحديث</button>
   </div>
 </header>
@@ -335,7 +296,7 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
   </div>
 
   <div class="ad-slot">
-    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3338501443809961" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
     <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 
@@ -542,7 +503,6 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
 </footer>
 
 <script>
-// ====== الثوابت ======
 const CURRENCIES=[
   {code:'USD',name:'دولار أمريكي',flag:'🇺🇸'},
   {code:'EUR',name:'يورو',flag:'🇪🇺'},
@@ -565,11 +525,6 @@ const INV_PRODUCTS={
   '100g':{label:'سبيكة 100 جم',grams:100,karat:24,mfg_pct:0.025,cashback_pct:0.015},
 };
 
-const SCRAPER_BASE = 'https://gold-scraper-server.onrender.com';
-const fmt=(n,d=2)=>Number(n).toLocaleString('ar-EG',{minimumFractionDigits:d,maximumFractionDigits:d});
-const $=id=>document.getElementById(id);
-
-// ====== الحالة ======
 let goldPrices={24:0,21:0,18:0,14:0};
 let silverPrices={999:0,925:0,800:0};
 let prevRates={};
@@ -577,24 +532,34 @@ let sentimentVotes={buy:60,sell:40};
 let userVoted=false;
 let priceHistory=[]; 
 let lastRates={}; 
+
 let portfolio = JSON.parse(localStorage.getItem('gold_portfolio')) || [];
 let alerts = JSON.parse(localStorage.getItem('gold_alerts')) || [];
 
-// ====== مساعدات ======
-function updateTime(){
-  const n=new Date();
-  $('last-update').textContent='آخر تحديث: '+n.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
-}
+const fmt=(n,d=2)=>Number(n).toLocaleString('ar-EG',{minimumFractionDigits:d,maximumFractionDigits:d});
+const $=id=>document.getElementById(id);
+const updateTime=()=>{const n=new Date();$('last-update').textContent='آخر تحديث: '+n.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});};
+
 function showTab(i){
   document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
   document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
 }
+
 function toggleFabMenu(){
   $('fabMain').classList.toggle('active');
   $('fabMenu').classList.toggle('open');
 }
 
-// ====== تحميل البيانات ======
+function openLoginModal(){
+  // زر تسجيل الدخول الحقيقي — مثال بسيط بدون Supabase/Lazy injection
+  // عدّل هذا الرابط لصفحة تسجيل الدخول الخاصة بك
+  const url = 'login.html';
+  window.location.href = url;
+}
+
+// ربط مباشر وحصري برابط سيرفر فيرسيل المستقر الجديد الخاص بك
+const SCRAPER_BASE = 'https://gold-scraper-server.onrender.com';
+
 async function loadGold(){
   try{
     const r=await fetch(`${SCRAPER_BASE}/api/gold`);
@@ -702,16 +667,6 @@ async function loadCurrencies(){
   }catch(e){console.error('Currency load error:',e.message);$('err-cur').style.display='block';}
 }
 
-async function loadAll(){
-  const btn=$('refresh-btn');
-  btn.classList.add('loading');btn.textContent='⏳ جار التحديث...';
-  ['err-gold','err-silver','err-cur'].forEach(id=>$(id).style.display='none');
-  await Promise.allSettled([loadGold(),loadSilver(),loadCurrencies()]);
-  updateTime();
-  btn.classList.remove('loading');btn.textContent='🔄 تحديث';
-}
-
-// ====== الحاسبات ======
 function calcGold(){
   const g=parseFloat($('gc-grams').value),k=$('gc-karat').value;
   $('gc-result').textContent=(!g||g<=0||!goldPrices[k])?'—':fmt(g*goldPrices[k],0)+' جنيه مصري';
@@ -720,6 +675,7 @@ function calcSilver(){
   const g=parseFloat($('sc-grams').value),k=$('sc-karat').value;
   $('sc-result').textContent=(!g||g<=0||!silverPrices[k])?'—':fmt(g*silverPrices[k],2)+' جنيه مصري';
 }
+
 function calcInvestment(){
   const prod=INV_PRODUCTS[$('inv-product').value];
   const qty=parseInt($('inv-qty').value)||1;
@@ -738,17 +694,20 @@ function calcInvestment(){
     <div style="margin-top:6px">كاش باك متوقع عند البيع: <span style="color:var(--green)">+${fmt(cashback,0)} ج</span></div>
     <div>التكلفة الفعلية الصافية: <span style="color:var(--gold-lt);font-size:1.05rem;font-weight:900">${fmt(netCost,0)} ج</span></div>`;
 }
+
 function calcManualMfg(){
   const grams=parseFloat($('mfg-grams').value);
   const karat=$('mfg-karat').value;
   const manualPrice=parseFloat($('mfg-price').value);
   const mfgPct=parseFloat($('mfg-pct').value);
+
   const result=$('mfg-result');
 
   if(!grams||grams<=0){result.textContent='—';return;}
   if(mfgPct===''||isNaN(mfgPct)||mfgPct<0){result.textContent='—';return;}
 
   const gramPrice = (manualPrice && manualPrice>0) ? manualPrice : goldPrices[karat];
+
   if(!gramPrice){result.textContent='سعر اليوم لسه بيتحمل، استنى لحظة أو اكتب السعر يدوياً';return;}
 
   const rawCost = grams * gramPrice;
@@ -768,7 +727,6 @@ function calcManualMfg(){
     <div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">السعر النهائي اللي هتدفعه: <span style="color:var(--green);font-size:1.2rem;font-weight:900">${fmt(finalPrice,0)} ج</span></div>`;
 }
 
-// ====== المحفظة ======
 function addPortfolio(){
   const g=parseFloat($('pf-grams').value);
   const k=parseInt($('pf-karat').value);
@@ -807,7 +765,6 @@ function updatePortfolio(){
   $('ps-profit').textContent=(profit>=0?'+':'')+fmt(profit,0)+' جنيه';
 }
 
-// ====== Sentiment ======
 function calcSentiment(){
   if(!goldPrices[21]) return;
   let score=50;
@@ -836,7 +793,6 @@ function vote(type){
   calcSentiment();
 }
 
-// ====== الزكاة ======
 function calcZakat(){
   const zg24=parseFloat($('z-gold-24').value)||0;
   const zg21=parseFloat($('z-gold-21').value)||0;
@@ -870,7 +826,6 @@ function calcZakat(){
   $('z-due').style.color=reached?'var(--purple)':'var(--muted)';
 }
 
-// ====== التنبيهات ======
 function addAlert(type){
   let karat,price,dir,label;
   if(type==='gold'){karat=$('ag-karat').value;price=parseFloat($('ag-price').value);dir=$('ag-dir').value;label='ذهب '+karat;}
@@ -919,28 +874,21 @@ function checkAlerts(onlyType, rates){
   });
 }
 
-// ====== تسجيل الدخول (placeholder) ======
-function openLoginModal(){
-  alert('جاري تجهيز صفحة تسجيل الدخول...');
-  // window.location.href = "login.html";
+async function loadAll(){
+  const btn=$('refresh-btn');
+  btn.classList.add('loading');btn.textContent='⏳ جار التحديث...';
+  ['err-gold','err-silver','err-cur'].forEach(id=>$(id).style.display='none');
+  await Promise.allSettled([loadGold(),loadSilver(),loadCurrencies()]);
+  updateTime();
+  btn.classList.remove('loading');btn.textContent='🔄 تحديث';
 }
 
-// ====== Init ======
 if ($('footer-year')) {
   $('footer-year').textContent = new Date().getFullYear();
 }
+
 loadAll();
 setInterval(loadAll,5*60*1000);
-</script>
-
-<!-- Supabase Module (مستقبل التوسع) -->
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-  const supabaseUrl = 'https://qgilfubcnavitfhqmidj.supabase.co';
-  const supabaseKey = 'sb_publishable_XYhvHo3cpN8IVII8PZ0GiQ_yzvHvUgl';
-  const supabase = createClient(supabaseUrl, supabaseKey);
-  console.log("Supabase الاتصال تم بنجاح!");
-  // يمكنك إضافة دالات المصادقة هنا مستقبلاً
 </script>
 </body>
 </html>
