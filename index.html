@@ -882,5 +882,12 @@ if ($('footer-year')) {
 loadAll();
 setInterval(loadAll,5*60*1000);
 </script>
+  <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+        const supabaseUrl = 'https://qgilfubcnavitfhqmidj.supabase.co';
+        const supabaseKey = 'sb_publishable_XYhvHo3cpN8IVII8PZ0GiQ_yzvHvUgl';
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        console.log("Supabase الاتصال تم بنجاح!");
+    </script>
 </body>
 </html>
