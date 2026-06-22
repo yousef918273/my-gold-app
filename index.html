@@ -56,7 +56,7 @@ header{
 #login-btn:hover{background:var(--gold);color:#000;}
 
 #user-badge{display:none;align-items:center;gap:8px;}
-#user-email{font-size:0.72rem;color:var(--gold-lt);font-family:'IBM Plex Mono',monospace;max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#user-name{font-size:0.72rem;color:var(--gold-lt);font-family:'Cairo',sans-serif;font-weight:700;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 #logout-btn{background:none;border:1px solid var(--red);color:var(--red);padding:4px 10px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.7rem;font-weight:700;transition:background 0.2s,color 0.2s;white-space:nowrap;}
 #logout-btn:hover{background:var(--red);color:#fff;}
 
@@ -288,7 +288,7 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
   <div id="auth-container">
     <button id="login-btn" onclick="openLoginModal()">تسجيل الدخول</button>
     <div id="user-badge">
-      <span id="user-email"></span>
+      <span id="user-name"></span>
       <button id="logout-btn" onclick="logout()">خروج</button>
     </div>
   </div>
@@ -586,7 +586,8 @@ let sentimentVotes={buy:60,sell:40};
 let userVoted=false;
 let priceHistory=[]; 
 let lastRates={}; 
-let portfolio = JSON.parse(localStorage.getItem('gold_portfolio')) || [];
+let currentUserId = null;
+let portfolio = []; 
 let alerts = JSON.parse(localStorage.getItem('gold_alerts')) || [];
 
 // ====== مساعدات ======
@@ -778,6 +779,26 @@ function calcManualMfg(){
 }
 
 // ====== المحفظة ======
+function getPortfolioKey(userId){
+  return userId ? 'gold_portfolio_' + userId : 'gold_portfolio_guest';
+}
+function loadPortfolioForUser(userId){
+  currentUserId = userId;
+  const key = getPortfolioKey(userId);
+  portfolio = JSON.parse(localStorage.getItem(key)) || [];
+  updatePortfolio();
+}
+function clearPortfolio(){
+  currentUserId = null;
+  portfolio = [];
+  updatePortfolio();
+}
+function savePortfolio(){
+  if(!currentUserId) return;
+  const key = getPortfolioKey(currentUserId);
+  localStorage.setItem(key, JSON.stringify(portfolio));
+}
+
 function addPortfolio(){
   const g=parseFloat($('pf-grams').value);
   const k=parseInt($('pf-karat').value);
@@ -785,12 +806,12 @@ function addPortfolio(){
   if(!g||!p||g<=0||p<=0){alert('اكتب الجرامات والسعر');return;}
   portfolio.push({id:Date.now(),grams:g,karat:k,buyPrice:p});
   $('pf-grams').value='';$('pf-price').value='';
-  localStorage.setItem('gold_portfolio', JSON.stringify(portfolio));
+  savePortfolio();
   updatePortfolio();
 }
 function removePortfolio(id){
   portfolio=portfolio.filter(x=>x.id!==id);
-  localStorage.setItem('gold_portfolio', JSON.stringify(portfolio));
+  savePortfolio();
   updatePortfolio();
 }
 function updatePortfolio(){
@@ -951,16 +972,20 @@ setInterval(loadAll,5*60*1000);
   function updateAuthUI(session){
     const loginBtn = document.getElementById('login-btn');
     const userBadge = document.getElementById('user-badge');
-    const userEmail = document.getElementById('user-email');
+    const userName = document.getElementById('user-name');
     if(session && session.user){
       if(loginBtn) loginBtn.style.display = 'none';
       if(userBadge){
         userBadge.style.display = 'flex';
-        userEmail.textContent = session.user.email || '';
+        const meta = session.user.user_metadata || {};
+        userName.textContent = meta.name || meta.full_name || meta.user_name || session.user.email || '';
       }
+      // Load user's private portfolio
+      if(window.loadPortfolioForUser) window.loadPortfolioForUser(session.user.id);
     } else {
       if(loginBtn) loginBtn.style.display = 'block';
       if(userBadge) userBadge.style.display = 'none';
+      if(window.clearPortfolio) window.clearPortfolio();
     }
   }
 
@@ -975,6 +1000,12 @@ setInterval(loadAll,5*60*1000);
   supabase.auth.onAuthStateChange((event, session) => {
     updateAuthUI(session);
   });
+
+  // Extra check: OAuth redirect may need a moment
+  setTimeout(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if(session) updateAuthUI(session);
+  }, 800);
 </script>
 </body>
 </html>
