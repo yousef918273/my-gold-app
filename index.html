@@ -782,11 +782,35 @@ function calcManualMfg(){
 function getPortfolioKey(userId){
   return userId ? 'gold_portfolio_' + userId : 'gold_portfolio_guest';
 }
-function loadPortfolioForUser(userId){
+async function loadPortfolioForUser(userId){
   currentUserId = userId;
+  if(!userId){ clearPortfolio(); return; }
+  
+  // Try Supabase first
+  if(window.supabase){
+    const { data, error } = await window.supabase
+      .from('portfolios')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+    
+    if(!error && data){
+      portfolio = data.map(row => ({
+        id: row.id,
+        grams: row.grams,
+        karat: row.karat,
+        buyPrice: row.buy_price
+      }));
+      console.log('[Auth] Loaded from Supabase:', portfolio.length);
+      updatePortfolio();
+      return;
+    }
+  }
+  
+  // Fallback: localStorage
   const key = getPortfolioKey(userId);
   portfolio = JSON.parse(localStorage.getItem(key)) || [];
-  console.log('[Auth] Loaded portfolio for user:', userId, 'count:', portfolio.length);
+  console.log('[Auth] Loaded from localStorage:', portfolio.length);
   updatePortfolio();
 }
 function clearPortfolio(){
@@ -799,21 +823,39 @@ function savePortfolio(){
   if(!currentUserId) return;
   const key = getPortfolioKey(currentUserId);
   localStorage.setItem(key, JSON.stringify(portfolio));
-  console.log('[Auth] Saved portfolio for user:', currentUserId);
 }
 
-function addPortfolio(){
+async function addPortfolio(){
   const g=parseFloat($('pf-grams').value);
   const k=parseInt($('pf-karat').value);
   const p=parseFloat($('pf-price').value);
   if(!g||!p||g<=0||p<=0){alert('اكتب الجرامات والسعر');return;}
-  portfolio.push({id:Date.now(),grams:g,karat:k,buyPrice:p});
+  
+  const tempId = Date.now();
+  portfolio.push({id:tempId,grams:g,karat:k,buyPrice:p});
   $('pf-grams').value='';$('pf-price').value='';
+  
+  if(window.supabase && currentUserId){
+    const { data, error } = await window.supabase
+      .from('portfolios')
+      .insert({ user_id: currentUserId, grams: g, karat: k, buy_price: p })
+      .select();
+    if(!error && data && data[0]){
+      const idx = portfolio.findIndex(x => x.id === tempId);
+      if(idx !== -1) portfolio[idx].id = data[0].id;
+    }
+  }
+  
   savePortfolio();
   updatePortfolio();
 }
-function removePortfolio(id){
+async function removePortfolio(id){
   portfolio=portfolio.filter(x=>x.id!==id);
+  
+  if(window.supabase && currentUserId){
+    await window.supabase.from('portfolios').delete().eq('id', id);
+  }
+  
   savePortfolio();
   updatePortfolio();
 }
@@ -971,8 +1013,9 @@ setInterval(loadAll,5*60*1000);
   const supabaseUrl = 'https://qgilfubcnavitfhqmidj.supabase.co';
   const supabaseKey = 'sb_publishable_XYhvHo3cpN8IVII8PZ0GiQ_yzvHvUgl';
   const supabase = createClient(supabaseUrl, supabaseKey);
+  window.supabase = supabase;
 
-  function updateAuthUI(session){
+  async function updateAuthUI(session){
     const loginBtn = document.getElementById('login-btn');
     const userBadge = document.getElementById('user-badge');
     const userName = document.getElementById('user-name');
@@ -982,7 +1025,19 @@ setInterval(loadAll,5*60*1000);
       if(userBadge){
         userBadge.style.display = 'flex';
         const meta = session.user.user_metadata || {};
-        userName.textContent = meta.name || meta.full_name || meta.user_name || session.user.email || '';
+        let displayName = meta.name || meta.full_name || meta.user_name || '';
+        
+        // Try to load name from profiles table
+        try {
+          const { data: profileData } = await supabase
+            .from('profiles')
+            .select('name')
+            .eq('id', session.user.id)
+            .single();
+          if(profileData && profileData.name) displayName = profileData.name;
+        } catch(e) {}
+        
+        userName.textContent = displayName || session.user.email || '';
       }
       if(window.loadPortfolioForUser) window.loadPortfolioForUser(session.user.id);
     } else {
