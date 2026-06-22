@@ -636,8 +636,7 @@ async function loadGold(){
     $('g-kg').textContent=fmt(g24*1000,0)+' ج';
     $('g-screen').textContent=d.ounceUsd?('$'+fmt(d.ounceUsd,0)):'—';
 
-    if(d.stale) $('err-gold').style.display='none';
-
+$('err-gold').style.display='none'; // ✅ — لو وصلت للـ try بنجاح، مفيش error أصلاً
     priceHistory.push(g24);
     if(priceHistory.length>7) priceHistory.shift();
     calcSentiment();
