@@ -669,7 +669,7 @@ async function loadSilver(){
     $('s-kg').textContent=fmt(silverPrices[999]*1000,0)+' ج';
     $('s-screen').textContent=d.ounceUsd?('$'+fmt(d.ounceUsd,2)):'—';
 
-    if(d.stale) $('err-silver').style.display='none';
+   $('err-gold').style.display='none'; // ✅ — لو وصلت للـ try بنجاح، مفيش error أصلاً
 
     calcSilver(); calcZakat();
     checkAlerts('silver');
