@@ -786,17 +786,20 @@ function loadPortfolioForUser(userId){
   currentUserId = userId;
   const key = getPortfolioKey(userId);
   portfolio = JSON.parse(localStorage.getItem(key)) || [];
+  console.log('[Auth] Loaded portfolio for user:', userId, 'count:', portfolio.length);
   updatePortfolio();
 }
 function clearPortfolio(){
   currentUserId = null;
   portfolio = [];
+  console.log('[Auth] Portfolio cleared');
   updatePortfolio();
 }
 function savePortfolio(){
   if(!currentUserId) return;
   const key = getPortfolioKey(currentUserId);
   localStorage.setItem(key, JSON.stringify(portfolio));
+  console.log('[Auth] Saved portfolio for user:', currentUserId);
 }
 
 function addPortfolio(){
@@ -974,15 +977,16 @@ setInterval(loadAll,5*60*1000);
     const userBadge = document.getElementById('user-badge');
     const userName = document.getElementById('user-name');
     if(session && session.user){
+      console.log('[Auth] Signed in:', session.user.id, session.user.email);
       if(loginBtn) loginBtn.style.display = 'none';
       if(userBadge){
         userBadge.style.display = 'flex';
         const meta = session.user.user_metadata || {};
         userName.textContent = meta.name || meta.full_name || meta.user_name || session.user.email || '';
       }
-      // Load user's private portfolio
       if(window.loadPortfolioForUser) window.loadPortfolioForUser(session.user.id);
     } else {
+      console.log('[Auth] No session');
       if(loginBtn) loginBtn.style.display = 'block';
       if(userBadge) userBadge.style.display = 'none';
       if(window.clearPortfolio) window.clearPortfolio();
@@ -998,10 +1002,10 @@ setInterval(loadAll,5*60*1000);
   updateAuthUI(session);
 
   supabase.auth.onAuthStateChange((event, session) => {
+    console.log('[Auth] Event:', event, 'User:', session?.user?.id);
     updateAuthUI(session);
   });
 
-  // Extra check: OAuth redirect may need a moment
   setTimeout(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if(session) updateAuthUI(session);
