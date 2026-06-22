@@ -487,6 +487,7 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
       <input type="number" id="pf-price" placeholder="سعر الجرام وقتها"/>
       <button class="btn inv" onclick="addPortfolio()">إضافة</button>
     </div>
+    <div id="pf-sync-err" style="color:var(--red);font-size:0.72rem;margin:8px 0;display:none"></div>
     <table class="portfolio-table" id="pf-table" style="display:none">
       <thead><tr><th>جرام</th><th>عيار</th><th>سعر الشراء</th><th></th></tr></thead>
       <tbody id="pf-tbody"></tbody>
@@ -782,42 +783,70 @@ function calcManualMfg(){
 function getPortfolioKey(userId){
   return userId ? 'gold_portfolio_' + userId : 'gold_portfolio_guest';
 }
+
+let supabaseClient = null;
+function getSupabase(){
+  if(supabaseClient) return supabaseClient;
+  if(window.supabase) supabaseClient = window.supabase;
+  return supabaseClient;
+}
+
 async function loadPortfolioForUser(userId){
   currentUserId = userId;
   if(!userId){ clearPortfolio(); return; }
   
-  // Try Supabase first
-  if(window.supabase){
-    const { data, error } = await window.supabase
-      .from('portfolios')
-      .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
-    
-    if(!error && data){
-      portfolio = data.map(row => ({
-        id: row.id,
-        grams: row.grams,
-        karat: row.karat,
-        buyPrice: row.buy_price
-      }));
-      console.log('[Auth] Loaded from Supabase:', portfolio.length);
-      updatePortfolio();
-      return;
+  const sb = getSupabase();
+  if(sb){
+    console.log('[Sync] Loading from Supabase for user:', userId);
+    try {
+      const { data, error } = await sb
+        .from('portfolios')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      
+      if(error){
+        console.error('[Sync] Supabase error:', error);
+        showSyncError('محفظة غير متزامنة: تأكد من تشغيل setup_database.sql في Supabase');
+      } else if(data){
+        portfolio = data.map(row => ({
+          id: row.id,
+          grams: row.grams,
+          karat: row.karat,
+          buyPrice: row.buy_price
+        }));
+        console.log('[Sync] Loaded from Supabase:', portfolio.length, 'items');
+        updatePortfolio();
+        return;
+      }
+    } catch(e) {
+      console.error('[Sync] Exception:', e);
     }
+  } else {
+    console.warn('[Sync] Supabase client not ready yet');
   }
   
   // Fallback: localStorage
   const key = getPortfolioKey(userId);
   portfolio = JSON.parse(localStorage.getItem(key)) || [];
-  console.log('[Auth] Loaded from localStorage:', portfolio.length);
+  console.log('[Sync] Fallback localStorage:', portfolio.length, 'items');
   updatePortfolio();
 }
+
+function showSyncError(msg){
+  const err = document.getElementById('pf-sync-err');
+  if(err) {
+    err.textContent = msg;
+    err.style.display = msg ? 'block' : 'none';
+  }
+}
+
 function clearPortfolio(){
   currentUserId = null;
   portfolio = [];
-  console.log('[Auth] Portfolio cleared');
+  console.log('[Sync] Portfolio cleared');
   updatePortfolio();
+  showSyncError('');
 }
 function savePortfolio(){
   if(!currentUserId) return;
@@ -835,25 +864,41 @@ async function addPortfolio(){
   portfolio.push({id:tempId,grams:g,karat:k,buyPrice:p});
   $('pf-grams').value='';$('pf-price').value='';
   
-  if(window.supabase && currentUserId){
-    const { data, error } = await window.supabase
-      .from('portfolios')
-      .insert({ user_id: currentUserId, grams: g, karat: k, buy_price: p })
-      .select();
-    if(!error && data && data[0]){
-      const idx = portfolio.findIndex(x => x.id === tempId);
-      if(idx !== -1) portfolio[idx].id = data[0].id;
+  const sb = getSupabase();
+  if(sb && currentUserId){
+    console.log('[Sync] Saving to Supabase...');
+    try {
+      const { data, error } = await sb
+        .from('portfolios')
+        .insert({ user_id: currentUserId, grams: g, karat: k, buy_price: p })
+        .select();
+      if(error){
+        console.error('[Sync] Save error:', error);
+      } else if(data && data[0]){
+        const idx = portfolio.findIndex(x => x.id === tempId);
+        if(idx !== -1) portfolio[idx].id = data[0].id;
+        console.log('[Sync] Saved to Supabase, id:', data[0].id);
+      }
+    } catch(e) {
+      console.error('[Sync] Save exception:', e);
     }
   }
   
   savePortfolio();
   updatePortfolio();
 }
+
 async function removePortfolio(id){
   portfolio=portfolio.filter(x=>x.id!==id);
   
-  if(window.supabase && currentUserId){
-    await window.supabase.from('portfolios').delete().eq('id', id);
+  const sb = getSupabase();
+  if(sb && currentUserId){
+    try {
+      await sb.from('portfolios').delete().eq('id', id);
+      console.log('[Sync] Deleted from Supabase, id:', id);
+    } catch(e) {
+      console.error('[Sync] Delete error:', e);
+    }
   }
   
   savePortfolio();
@@ -1027,7 +1072,6 @@ setInterval(loadAll,5*60*1000);
         const meta = session.user.user_metadata || {};
         let displayName = meta.name || meta.full_name || meta.user_name || '';
         
-        // Try to load name from profiles table
         try {
           const { data: profileData } = await supabase
             .from('profiles')
@@ -1039,7 +1083,10 @@ setInterval(loadAll,5*60*1000);
         
         userName.textContent = displayName || session.user.email || '';
       }
-      if(window.loadPortfolioForUser) window.loadPortfolioForUser(session.user.id);
+      // Load portfolio with a small delay to ensure supabase is ready
+      setTimeout(() => {
+        if(window.loadPortfolioForUser) window.loadPortfolioForUser(session.user.id);
+      }, 100);
     } else {
       console.log('[Auth] No session');
       if(loginBtn) loginBtn.style.display = 'block';
@@ -1061,10 +1108,14 @@ setInterval(loadAll,5*60*1000);
     updateAuthUI(session);
   });
 
+  // Extra retry for OAuth redirect
   setTimeout(async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if(session) updateAuthUI(session);
-  }, 800);
+    if(session && session.user) {
+      console.log('[Auth] Retry session found:', session.user.id);
+      updateAuthUI(session);
+    }
+  }, 1000);
 </script>
 </body>
 </html>
