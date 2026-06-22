@@ -54,7 +54,18 @@ header {
 }
 
 /* تأكد من إضافة هذا التنسيق للزر الجديد */
-
+<header>
+  <div class="logo">سعر <span>النهارده</span></div>
+  
+  <div id="auth-container">
+    <button id="login-btn" onclick="openLoginModal()">تسجيل الدخول</button>
+  </div>
+  
+  <div id="last-update">جار التحميل...</div>
+  <div style="display: flex; gap: 6px; align-items: center;">
+    <button id="refresh-btn" onclick="loadAll()">🔄 تحديث</button>
+  </div>
+</header>
 header{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--dark);z-index:100;}
 .logo{font-size:1.1rem;font-weight:900;color:var(--gold);}
 .logo span{color:var(--text);}
