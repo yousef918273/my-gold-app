@@ -23,17 +23,17 @@
   --border:#2A2A2A;--text:#F0EDE6;--muted:#777;
   --green:#3DD68C;--red:#F05454;--blue:#5B9BD5;--purple:#A78BFA;
 }
-#login-btn {
-  background: transparent;
-  border: 1px solid var(--gold);
-  color: var(--gold);
-  padding: 5px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-family: 'Cairo', sans-serif;
-  font-size: 0.8rem;
-  transition: background 0.2s;
-  white-space: nowrap;
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--dark);
+  z-index: 100;
+  gap: 5px; /* يضيف مسافة صغيرة بين العناصر */
 }
 #login-btn:hover {
   background: var(--gold);
