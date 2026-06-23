@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0"/>
-<title>سعر النهارده | ذهب · فضة · عملات — مصر</title>
+<title>سعر النهارده | Gold · Silver · Currency — Egypt</title>
 
-<meta name="description" content="أسعار الذهب والفضة والعملات في مصر لحظة بلحظة مباشرة من الصاغة. تحديث تلقائي كل 5 دقائق. حاسبات ذكية، تنبيهات أسعار، محفظة استثمار، وحاسبة زكاة.">
-<meta name="keywords" content="سعر الذهب, الذهب اليوم, الدولار اليوم, سعر الذهب عيار 21, الفضة, الصاغة المصرية, سعر النهارده, سبائك ذهب, زكاة الذهب">
+<meta name="description" content="أسعار الذهب والفضة والعملات في مصر لحظة بلحظة. تحديث تلقائي، حاسبات ذكية، تنبيهات، محفظة استثمار، زكاة، وشارتات تفاعلية.">
+<meta name="keywords" content="سعر الذهب, الذهب اليوم, الدولار اليوم, سعر الذهب عيار 21, الفضة, الصاغة المصرية, سعر النهارده">
 <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
 <meta name="googlebot" content="index, follow">
 <meta name="author" content="Youssef Mosaad">
@@ -48,8 +48,37 @@
 </script>
 
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
 <style>
 :root{--gold:#C9A84C;--gold-lt:#E8D08A;--silver:#A8B8C8;--silver-lt:#D0DCE8;--dark:#0D0D0D;--card:#161616;--card2:#1C1C1C;--border:#2A2A2A;--text:#F0EDE6;--muted:#777;--green:#3DD68C;--red:#F05454;--blue:#5B9BD5;--purple:#A78BFA;--orange:#F0A500;}
+@media (prefers-color-scheme: light) {
+  :root{--dark:#f5f5f0;--card:#ffffff;--card2:#f0f0eb;--border:#ddd;--text:#1a1a1a;--muted:#666;}
+  body{background:var(--dark);color:var(--text);}
+  header{background:rgba(245,245,240,0.95);}
+  .ticker-wrap{background:#eee;}
+  .tabs{background:var(--dark);}
+  .skeleton{background:linear-gradient(90deg,#e0e0e0 25%,#d0d0d0 50%,#e0e0e0 75%);}
+  .currency-card:hover{background:#f8f8f5;}
+  .info-card:hover{border-color:var(--gold);}
+  .vote-btn{background:#fff;}
+  .vote-btn:hover{background:#f5f5f0;}
+  .row input,.row select{background:#fff;border-color:#ddd;color:#1a1a1a;}
+  .ad-slot{background:#eee;}
+}
+[data-theme="light"]{--dark:#f5f5f0;--card:#ffffff;--card2:#f0f0eb;--border:#ddd;--text:#1a1a1a;--muted:#666;}
+[data-theme="light"] body{background:var(--dark);color:var(--text);}
+[data-theme="light"] header{background:rgba(245,245,240,0.95);}
+[data-theme="light"] .ticker-wrap{background:#eee;}
+[data-theme="light"] .tabs{background:var(--dark);}
+[data-theme="light"] .skeleton{background:linear-gradient(90deg,#e0e0e0 25%,#d0d0d0 50%,#e0e0e0 75%);}
+[data-theme="light"] .currency-card:hover{background:#f8f8f5;}
+[data-theme="light"] .info-card:hover{border-color:var(--gold);}
+[data-theme="light"] .vote-btn{background:#fff;}
+[data-theme="light"] .vote-btn:hover{background:#f5f5f0;}
+[data-theme="light"] .row input,[data-theme="light"] .row select{background:#fff;border-color:#ddd;color:#1a1a1a;}
+[data-theme="light"] .ad-slot{background:#eee;}
+
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--dark);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;padding-bottom:100px;-webkit-font-smoothing:antialiased;}
 
@@ -194,7 +223,9 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 .ad-slot{background:#111;border:1px dashed var(--border);border-radius:8px;padding:16px;text-align:center;color:var(--muted);font-size:0.7rem;margin-bottom:18px;min-height:90px;display:flex;align-items:center;justify-content:center;}
 .ad-slot ins.adsbygoogle{display:block;}
 
-/* ===== NEW: Daily Change Indicators ===== */
+/* ===== NEW FEATURES ===== */
+
+/* Daily Change */
 .daily-change{display:flex;gap:8px;margin-bottom:18px;}
 .daily-card{flex:1;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;transition:transform 0.2s, border-color 0.2s;}
 .daily-card:hover{border-color:var(--gold);transform:translateY(-2px);}
@@ -202,36 +233,59 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 .daily-card .dval{font-size:0.95rem;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .daily-card .dchange{font-size:0.65rem;font-family:'IBM Plex Mono',monospace;margin-top:3px;font-weight:600;}
 
-/* ===== NEW: Mini Chart ===== */
+/* Chart.js Container */
 .chart-wrap{margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px;}
 .chart-wrap h3{font-size:0.8rem;color:var(--gold);margin-bottom:10px;}
-#mini-chart{width:100%;height:120px;}
+#gold-chart,#silver-chart{width:100%;height:180px;}
 
-/* ===== NEW: PWA Install Button ===== */
+/* PWA Install Button */
 #pwa-install-btn{position:fixed;bottom:90px;right:16px;background:var(--gold);color:#000;border:none;border-radius:50%;width:48px;height:48px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(201,168,76,0.3);z-index:998;transition:transform 0.2s;}
 #pwa-install-btn:hover{transform:scale(1.05);}
 #pwa-install-btn.show{display:flex;}
 
-/* ===== NEW: Push Notification Toggle ===== */
-.notif-toggle{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:18px;cursor:pointer;transition:border-color 0.2s;}
-.notif-toggle:hover{border-color:var(--green);}
-.notif-toggle .toggle-icon{font-size:1.2rem;}
-.notif-toggle .toggle-text{font-size:0.8rem;flex:1;}
-.notif-toggle .toggle-status{font-size:0.65rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
-.notif-toggle.active{border-color:var(--green);background:#0d1a0d;}
-.notif-toggle.active .toggle-status{color:var(--green);}
-
-/* ===== NEW: Share Button ===== */
-.share-btn{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.75rem;font-weight:700;transition:all 0.2s;}
-.share-btn:hover{background:var(--border);}
-
-/* ===== NEW: Toast Notifications ===== */
+/* Toast Notifications */
 .toast-container{position:fixed;top:70px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
 .toast{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:0.85rem;box-shadow:0 4px 20px rgba(0,0,0,0.5);opacity:0;transform:translateY(-20px);transition:all 0.3s ease;pointer-events:auto;min-width:280px;text-align:center;}
 .toast.show{opacity:1;transform:translateY(0);}
 .toast.success{border-color:var(--green);color:var(--green);}
 .toast.error{border-color:var(--red);color:var(--red);}
 .toast.info{border-color:var(--blue);color:var(--blue);}
+
+/* Share Button */
+.share-btn{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:6px 12px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.75rem;font-weight:700;transition:all 0.2s;}
+.share-btn:hover{background:var(--border);}
+
+/* Language Toggle */
+.lang-toggle{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.7rem;font-weight:700;transition:all 0.2s;}
+.lang-toggle:hover{background:var(--border);}
+
+/* Data Saver Mode */
+.saver-toggle{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:18px;cursor:pointer;transition:border-color 0.2s;}
+.saver-toggle:hover{border-color:var(--blue);}
+.saver-toggle .toggle-icon{font-size:1.2rem;}
+.saver-toggle .toggle-text{font-size:0.8rem;flex:1;}
+.saver-toggle .toggle-status{font-size:0.65rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+.saver-toggle.active{border-color:var(--blue);background:#0d1a1a;}
+.saver-toggle.active .toggle-status{color:var(--blue);}
+
+/* Theme Toggle */
+.theme-toggle{background:var(--card2);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.7rem;font-weight:700;transition:all 0.2s;}
+.theme-toggle:hover{background:var(--border);}
+
+/* Share Price as Image */
+.share-img-btn{background:var(--gold);color:#000;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem;font-weight:700;transition:all 0.2s;margin-top:10px;}
+.share-img-btn:hover{background:var(--gold-lt);}
+
+/* Goldsmith Map */
+.map-wrap{margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px;display:none;}
+.map-wrap h3{font-size:0.8rem;color:var(--gold);margin-bottom:10px;}
+#goldsmith-map{width:100%;height:250px;border-radius:8px;}
+
+/* Settings Panel */
+.settings-btn{background:none;border:1px solid var(--border);color:var(--muted);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.8rem;transition:all 0.2s;}
+.settings-btn:hover{border-color:var(--gold);color:var(--gold);}
+.settings-panel{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px;margin-bottom:18px;display:none;}
+.settings-panel.show{display:block;}
 
 footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;border-top:1px solid var(--border);line-height:1.6;}
 
@@ -245,7 +299,6 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
 </head>
 <body>
 
-<!-- Toast Container -->
 <div class="toast-container" id="toast-container"></div>
 
 <header>
@@ -259,47 +312,46 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
   </div>
   <div id="last-update">جار التحميل...</div>
   <div style="display:flex;gap:6px;align-items:center;">
-    <button class="share-btn" onclick="shareApp()">📤 مشاركة</button>
-    <button id="refresh-btn" onclick="loadAll()">🔄 تحديث</button>
+    <button class="theme-toggle" onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
+    <button class="lang-toggle" onclick="toggleLang()" title="Change Language">EN</button>
+    <button class="share-btn" onclick="shareApp()">📤</button>
+    <button id="refresh-btn" onclick="loadAll()">🔄</button>
   </div>
 </header>
 
 <div class="ticker-wrap"><div class="ticker" id="ticker"><span class="ticker-item">جار تحميل الأسعار...</span></div></div>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab(0)">🥇 الذهب</div>
-  <div class="tab t2" onclick="showTab(1)">🪙 الفضة</div>
-  <div class="tab t3" onclick="showTab(2)">💱 العملات</div>
-  <div class="tab t4" onclick="showTab(3)">📈 استثمار</div>
-  <div class="tab t5" onclick="showTab(4)">🕌 زكاة</div>
+  <div class="tab active" onclick="showTab(0)">🥇 <span data-ar="الذهب" data-en="Gold">الذهب</span></div>
+  <div class="tab t2" onclick="showTab(1)">🪙 <span data-ar="الفضة" data-en="Silver">الفضة</span></div>
+  <div class="tab t3" onclick="showTab(2)">💱 <span data-ar="العملات" data-en="Currency">العملات</span></div>
+  <div class="tab t4" onclick="showTab(3)">📈 <span data-ar="استثمار" data-en="Invest">استثمار</span></div>
+  <div class="tab t5" onclick="showTab(4)">🕌 <span data-ar="زكاة" data-en="Zakat">زكاة</span></div>
 </div>
-
 <div class="panel active" id="p0">
   <div class="error-box" id="err-gold">⚠️ تعذّر تحميل أسعار الذهب.</div>
 
-  <!-- NEW: Daily Change -->
   <div class="daily-change">
     <div class="daily-card">
-      <div class="dlbl">تغير اليوم — عيار 21</div>
+      <div class="dlbl" data-ar="تغير اليوم — عيار 21" data-en="Today Change — 21K">تغير اليوم — عيار 21</div>
       <div class="dval" id="gold-daily-val">—</div>
       <div class="dchange" id="gold-daily-change">—</div>
     </div>
     <div class="daily-card">
-      <div class="dlbl">تغير اليوم — عيار 24</div>
+      <div class="dlbl" data-ar="تغير اليوم — عيار 24" data-en="Today Change — 24K">تغير اليوم — عيار 24</div>
       <div class="dval" id="gold24-daily-val">—</div>
       <div class="dchange" id="gold24-daily-change">—</div>
     </div>
   </div>
 
-  <!-- NEW: Mini Chart -->
   <div class="chart-wrap">
-    <h3>📉 تحركات السعر (7 أيام)</h3>
-    <canvas id="mini-chart"></canvas>
+    <h3 data-ar="📉 تحركات السعر (7 أيام)" data-en="📉 Price Movement (7 Days)">📉 تحركات السعر (7 أيام)</h3>
+    <canvas id="gold-chart"></canvas>
   </div>
 
-  <div class="sec g">🥇 أسعار الذهب — جنيه / جرام</div>
-  <table class="price-table">
-    <thead><tr><th style="text-align:right;padding-right:12px">العيار</th><th>شراء (تشتري منك)</th><th>بيع (تبيعلك)</th><th>الفرق</th></tr></thead>
+  <div class="sec g" data-ar="🥇 أسعار الذهب — جنيه / جرام" data-en="🥇 Gold Prices — EGP / Gram">🥇 أسعار الذهب — جنيه / جرام</div>
+  <table class="price-table" id="gold-table-share">
+    <thead><tr><th style="text-align:right;padding-right:12px" data-ar="العيار" data-en="Karat">العيار</th><th data-ar="شراء" data-en="Buy">شراء</th><th data-ar="بيع" data-en="Sell">بيع</th><th data-ar="الفرق" data-en="Spread">الفرق</th></tr></thead>
     <tbody id="gold-tbody">
       <tr><td colspan="4"><div class="skeleton" style="height:34px;margin:3px 0"></div></td></tr>
       <tr><td colspan="4"><div class="skeleton" style="height:34px;margin:3px 0"></div></td></tr>
@@ -308,31 +360,33 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     </tbody>
   </table>
 
-  <div class="sec g">📦 أسعار إضافية</div>
+  <div class="sec g" data-ar="📦 أسعار إضافية" data-en="📦 Additional Prices">📦 أسعار إضافية</div>
   <div class="info-grid">
-    <div class="info-card"><div class="lbl">الجنيه الذهب</div><div class="val" id="g-pound">—</div><div class="change" id="g-pound-change"></div></div>
-    <div class="info-card"><div class="lbl">الأونصة (31.1 جم)</div><div class="val" id="g-oz">—</div><div class="change" id="g-oz-change"></div></div>
-    <div class="info-card"><div class="lbl">كيلو ذهب 24</div><div class="val" id="g-kg">—</div><div class="change" id="g-kg-change"></div></div>
-    <div class="info-card"><div class="lbl">سعر الأونصة (دولار عالمي)</div><div class="val" id="g-screen">—</div></div>
+    <div class="info-card"><div class="lbl" data-ar="الجنيه الذهب" data-en="Gold Pound">الجنيه الذهب</div><div class="val" id="g-pound">—</div><div class="change" id="g-pound-change"></div></div>
+    <div class="info-card"><div class="lbl" data-ar="الأونصة (31.1 جم)" data-en="Ounce (31.1g)">الأونصة (31.1 جم)</div><div class="val" id="g-oz">—</div><div class="change" id="g-oz-change"></div></div>
+    <div class="info-card"><div class="lbl" data-ar="كيلو ذهب 24" data-en="24K Gold Kilo">كيلو ذهب 24</div><div class="val" id="g-kg">—</div><div class="change" id="g-kg-change"></div></div>
+    <div class="info-card"><div class="lbl" data-ar="سعر الأونصة (دولار عالمي)" data-en="Global Ounce ($)">سعر الأونصة (دولار عالمي)</div><div class="val" id="g-screen">—</div></div>
   </div>
 
-  <div class="sec g">📊 تشتري ولا تبيع؟</div>
+  <div class="sec g" data-ar="📊 تشتري ولا تبيع؟" data-en="📊 Buy or Sell?">📊 تشتري ولا تبيع؟</div>
   <div class="sentiment-wrap">
-    <div class="sentiment-labels"><span>🟢 شراء</span><span>🔴 بيع</span></div>
+    <div class="sentiment-labels"><span>🟢 <span data-ar="شراء" data-en="Buy">شراء</span></span><span>🔴 <span data-ar="بيع" data-en="Sell">بيع</span></span></div>
     <div class="sentiment-bar-bg"><div class="sentiment-bar" id="sentiment-bar" style="width:50%"></div></div>
     <div class="sentiment-verdict neutral" id="sentiment-verdict">جار التحليل...</div>
     <div class="vote-row">
-      <button class="vote-btn" id="vote-buy-btn" onclick="vote('buy')">👍 هيرفع</button>
-      <button class="vote-btn" id="vote-sell-btn" onclick="vote('sell')">👎 هينزل</button>
+      <button class="vote-btn" id="vote-buy-btn" onclick="vote('buy')">👍 <span data-ar="هيرفع" data-en="Will Rise">هيرفع</span></button>
+      <button class="vote-btn" id="vote-sell-btn" onclick="vote('sell')">👎 <span data-ar="هينزل" data-en="Will Fall">هينزل</span></button>
     </div>
   </div>
+
+  <button class="share-img-btn" onclick="sharePriceAsImage('gold')" data-ar="📸 مشاركة السعر كصورة" data-en="📸 Share Price as Image">📸 مشاركة السعر كصورة</button>
 
   <div class="ad-slot" id="ad-gold">
     <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3338501443809961" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
   </div>
 
   <div class="box">
-    <h3 class="g">⚖️ حاسبة الذهب</h3>
+    <h3 class="g" data-ar="⚖️ حاسبة الذهب" data-en="⚖️ Gold Calculator">⚖️ حاسبة الذهب</h3>
     <div class="row">
       <input type="number" id="gc-grams" placeholder="الوزن بالجرام" min="0" step="0.1" oninput="calcGold()"/>
       <select id="gc-karat" onchange="calcGold()"><option value="24">عيار 24</option><option value="21" selected>عيار 21</option><option value="18">عيار 18</option><option value="14">عيار 14</option></select>
@@ -341,11 +395,11 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
   </div>
 
   <div class="box">
-    <h3 class="alert">🔔 تنبيه السعر</h3>
+    <h3 class="alert" data-ar="🔔 تنبيه السعر" data-en="🔔 Price Alert">🔔 تنبيه السعر</h3>
     <div class="row">
       <select id="ag-karat"><option value="24">ذهب 24</option><option value="21">ذهب 21</option><option value="18">ذهب 18</option><option value="14">ذهب 14</option></select>
       <input type="number" id="ag-price" placeholder="السعر المستهدف"/>
-      <select id="ag-dir"><option value="above">يصعد لـ</option><option value="below">ينزل لـ</option></select>
+      <select id="ag-dir"><option value="above" data-ar="يصعد لـ" data-en="Rises to">يصعد لـ</option><option value="below" data-ar="ينزل لـ" data-en="Falls to">ينزل لـ</option></select>
       <button class="btn alert" onclick="addAlert('gold')">إضافة</button>
     </div>
     <div class="alert-list" id="alerts-gold"></div>
@@ -355,41 +409,48 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
 <div class="panel" id="p1">
   <div class="error-box" id="err-silver">⚠️ تعذّر تحميل أسعار الفضة.</div>
 
-  <!-- NEW: Silver Daily Change -->
   <div class="daily-change">
     <div class="daily-card">
-      <div class="dlbl">تغير اليوم — فضة 925</div>
+      <div class="dlbl" data-ar="تغير اليوم — فضة 925" data-en="Today Change — Silver 925">تغير اليوم — فضة 925</div>
       <div class="dval" id="silver-daily-val">—</div>
       <div class="dchange" id="silver-daily-change">—</div>
     </div>
     <div class="daily-card">
-      <div class="dlbl">تغير اليوم — فضة 999</div>
+      <div class="dlbl" data-ar="تغير اليوم — فضة 999" data-en="Today Change — Silver 999">تغير اليوم — فضة 999</div>
       <div class="dval" id="silver999-daily-val">—</div>
       <div class="dchange" id="silver999-daily-change">—</div>
     </div>
   </div>
 
-  <div class="sec s">🪙 أسعار الفضة — جنيه / جرام</div>
-  <table class="price-table">
-    <thead><tr><th style="text-align:right;padding-right:12px">العيار</th><th>شراء</th><th>بيع</th><th>الفرق</th></tr></thead>
+  <div class="chart-wrap">
+    <h3 data-ar="📉 تحركات الفضة (7 أيام)" data-en="📉 Silver Movement (7 Days)">📉 تحركات الفضة (7 أيام)</h3>
+    <canvas id="silver-chart"></canvas>
+  </div>
+
+  <div class="sec s" data-ar="🪙 أسعار الفضة — جنيه / جرام" data-en="🪙 Silver Prices — EGP / Gram">🪙 أسعار الفضة — جنيه / جرام</div>
+  <table class="price-table" id="silver-table-share">
+    <thead><tr><th style="text-align:right;padding-right:12px" data-ar="العيار" data-en="Karat">العيار</th><th data-ar="شراء" data-en="Buy">شراء</th><th data-ar="بيع" data-en="Sell">بيع</th><th data-ar="الفرق" data-en="Spread">الفرق</th></tr></thead>
     <tbody id="silver-tbody">
       <tr><td colspan="4"><div class="skeleton" style="height:34px;margin:3px 0"></div></td></tr>
       <tr><td colspan="4"><div class="skeleton" style="height:34px;margin:3px 0"></div></td></tr>
       <tr><td colspan="4"><div class="skeleton" style="height:34px;margin:3px 0"></div></td></tr>
     </tbody>
   </table>
-  <div class="sec s">📦 أسعار إضافية</div>
+  <div class="sec s" data-ar="📦 أسعار إضافية" data-en="📦 Additional Prices">📦 أسعار إضافية</div>
   <div class="info-grid">
-    <div class="info-card"><div class="lbl">جنيه الفضة (8 جم)</div><div class="val s" id="s-pound">—</div></div>
-    <div class="info-card"><div class="lbl">الأونصة (31.1 جم)</div><div class="val s" id="s-oz">—</div></div>
-    <div class="info-card"><div class="lbl">كيلو فضة 999</div><div class="val s" id="s-kg">—</div></div>
-    <div class="info-card"><div class="lbl">سعر الشاشة ($)</div><div class="val s" id="s-screen">—</div></div>
+    <div class="info-card"><div class="lbl" data-ar="جنيه الفضة (8 جم)" data-en="Silver Pound (8g)">جنيه الفضة (8 جم)</div><div class="val s" id="s-pound">—</div></div>
+    <div class="info-card"><div class="lbl" data-ar="الأونصة (31.1 جم)" data-en="Ounce (31.1g)">الأونصة (31.1 جم)</div><div class="val s" id="s-oz">—</div></div>
+    <div class="info-card"><div class="lbl" data-ar="كيلو فضة 999" data-en="999 Silver Kilo">كيلو فضة 999</div><div class="val s" id="s-kg">—</div></div>
+    <div class="info-card"><div class="lbl" data-ar="سعر الشاشة ($)" data-en="Global Price ($)">سعر الشاشة ($)</div><div class="val s" id="s-screen">—</div></div>
   </div>
+
+  <button class="share-img-btn" onclick="sharePriceAsImage('silver')" data-ar="📸 مشاركة السعر كصورة" data-en="📸 Share Price as Image">📸 مشاركة السعر كصورة</button>
+
   <div class="ad-slot" id="ad-silver">
     <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3338501443809961" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
   </div>
   <div class="box">
-    <h3 class="s">⚖️ حاسبة الفضة</h3>
+    <h3 class="s" data-ar="⚖️ حاسبة الفضة" data-en="⚖️ Silver Calculator">⚖️ حاسبة الفضة</h3>
     <div class="row">
       <input type="number" id="sc-grams" placeholder="الوزن بالجرام" min="0" step="0.1" oninput="calcSilver()"/>
       <select id="sc-karat" onchange="calcSilver()"><option value="999">عيار 999</option><option value="925" selected>عيار 925</option><option value="800">عيار 800</option></select>
@@ -397,11 +458,11 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     <div class="calc-result s" id="sc-result">—</div>
   </div>
   <div class="box">
-    <h3 class="alert">🔔 تنبيه السعر</h3>
+    <h3 class="alert" data-ar="🔔 تنبيه السعر" data-en="🔔 Price Alert">🔔 تنبيه السعر</h3>
     <div class="row">
       <select id="as-karat"><option value="999">فضة 999</option><option value="925">فضة 925</option><option value="800">فضة 800</option></select>
       <input type="number" id="as-price" placeholder="السعر المستهدف"/>
-      <select id="as-dir"><option value="above">يصعد لـ</option><option value="below">ينزل لـ</option></select>
+      <select id="as-dir"><option value="above" data-ar="يصعد لـ" data-en="Rises to">يصعد لـ</option><option value="below" data-ar="ينزل لـ" data-en="Falls to">ينزل لـ</option></select>
       <button class="btn alert" onclick="addAlert('silver')">إضافة</button>
     </div>
     <div class="alert-list" id="alerts-silver"></div>
@@ -410,12 +471,12 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
 
 <div class="panel" id="p2">
   <div class="error-box" id="err-cur">⚠️ تعذّر تحميل أسعار العملات.</div>
-  <div class="sec c">🏦 الدولار — بنوك vs سوق</div>
+  <div class="sec c" data-ar="🏦 الدولار — بنوك vs سوق" data-en="🏦 USD — Banks vs Market">🏦 الدولار — بنوك vs سوق</div>
   <div class="dollar-compare">
-    <div class="dollar-card off"><div class="dlbl">م.دولار البنوك</div><div class="dval" id="usd-official">—</div><div style="font-size:0.6rem;color:var(--muted);margin-top:3px">جنيه</div></div>
-    <div class="dollar-card mkt"><div class="dlbl">دولار السوق (تقريبي)</div><div class="dval" id="usd-market">—</div><div style="font-size:0.6rem;color:var(--muted);margin-top:3px">جنيه</div></div>
+    <div class="dollar-card off"><div class="dlbl" data-ar="م.دولار البنوك" data-en="Bank Rate">م.دولار البنوك</div><div class="dval" id="usd-official">—</div><div style="font-size:0.6rem;color:var(--muted);margin-top:3px">EGP</div></div>
+    <div class="dollar-card mkt"><div class="dlbl" data-ar="دولار السوق (تقريبي)" data-en="Market Rate (Approx)">دولار السوق (تقريبي)</div><div class="dval" id="usd-market">—</div><div style="font-size:0.6rem;color:var(--muted);margin-top:3px">EGP</div></div>
   </div>
-  <div class="sec c">💱 أسعار العملات — مقابل الجنيه</div>
+  <div class="sec c" data-ar="💱 أسعار العملات — مقابل الجنيه" data-en="💱 Currency Rates — vs EGP">💱 أسعار العملات — مقابل الجنيه</div>
   <div class="currency-list" id="currency-list">
     <div class="currency-card"><div class="skeleton" style="width:100%;height:42px"></div></div>
     <div class="currency-card"><div class="skeleton" style="width:100%;height:42px"></div></div>
@@ -425,11 +486,11 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-3338501443809961" data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
   </div>
   <div class="box">
-    <h3 class="alert">🔔 تنبيه العملة</h3>
+    <h3 class="alert" data-ar="🔔 تنبيه العملة" data-en="🔔 Currency Alert">🔔 تنبيه العملة</h3>
     <div class="row">
       <select id="ac-code"><option value="USD">دولار USD</option><option value="EUR">يورو EUR</option><option value="GBP">إسترليني GBP</option><option value="SAR">ريال SAR</option><option value="AED">درهم AED</option><option value="KWD">دينار KWD</option></select>
       <input type="number" id="ac-price" placeholder="السعر بالجنيه"/>
-      <select id="ac-dir"><option value="above">يصعد لـ</option><option value="below">ينزل لـ</option></select>
+      <select id="ac-dir"><option value="above" data-ar="يصعد لـ" data-en="Rises to">يصعد لـ</option><option value="below" data-ar="ينزل لـ" data-en="Falls to">ينزل لـ</option></select>
       <button class="btn alert" onclick="addAlert('cur')">إضافة</button>
     </div>
     <div class="alert-list" id="alerts-cur"></div>
@@ -437,25 +498,25 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
 </div>
 
 <div class="panel" id="p3">
-  <div class="sec inv">💰 حاسبة السبائك والجنيهات</div>
+  <div class="sec inv" data-ar="💰 حاسبة السبائك والجنيهات" data-en="💰 Bullion Calculator">💰 حاسبة السبائك والجنيهات</div>
   <div class="box">
-    <h3 class="inv">🏅 اختر المنتج</h3>
+    <h3 class="inv" data-ar="🏅 اختر المنتج" data-en="🏅 Select Product">🏅 اختر المنتج</h3>
     <div class="row">
       <select id="inv-product" onchange="calcInvestment()">
-        <option value="jineh">الجنيه الذهب (8 جم)</option>
-        <option value="5g">سبيكة 5 جرام</option>
-        <option value="10g">سبيكة 10 جرام</option>
-        <option value="oz">سبيكة أونصة (31.1 جم)</option>
-        <option value="50g">سبيكة 50 جرام</option>
-        <option value="100g">سبيكة 100 جرام</option>
+        <option value="jineh" data-ar="الجنيه الذهب (8 جم)" data-en="Gold Pound (8g)">الجنيه الذهب (8 جم)</option>
+        <option value="5g" data-ar="سبيكة 5 جرام" data-en="5g Bar">سبيكة 5 جرام</option>
+        <option value="10g" data-ar="سبيكة 10 جرام" data-en="10g Bar">سبيكة 10 جرام</option>
+        <option value="oz" data-ar="سبيكة أونصة (31.1 جم)" data-en="Ounce Bar (31.1g)">سبيكة أونصة (31.1 جم)</option>
+        <option value="50g" data-ar="سبيكة 50 جرام" data-en="50g Bar">سبيكة 50 جرام</option>
+        <option value="100g" data-ar="سبيكة 100 جرام" data-en="100g Bar">سبيكة 100 جرام</option>
       </select>
       <input type="number" id="inv-qty" placeholder="الكمية" value="1" min="1" oninput="calcInvestment()"/>
     </div>
     <div id="inv-result" class="calc-result inv">—</div>
   </div>
-  <div class="sec inv">🧮 حاسبة المصنعية اليدوية</div>
+  <div class="sec inv" data-ar="🧮 حاسبة المصنعية اليدوية" data-en="🧮 Manufacturing Calculator">🧮 حاسبة المصنعية اليدوية</div>
   <div class="box">
-    <h3 class="inv">احسب سعر قطعتك بنفسك</h3>
+    <h3 class="inv" data-ar="احسب سعر قطعتك بنفسك" data-en="Calculate your piece price">احسب سعر قطعتك بنفسك</h3>
     <div class="row">
       <input type="number" id="mfg-grams" placeholder="عدد الجرامات" min="0" step="0.1" oninput="calcManualMfg()"/>
       <select id="mfg-karat" onchange="calcManualMfg()"><option value="24">عيار 24</option><option value="21" selected>عيار 21</option><option value="18">عيار 18</option><option value="14">عيار 14</option></select>
@@ -464,9 +525,9 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     <div class="row"><input type="number" id="mfg-pct" placeholder="نسبة المصنعية %" min="0" max="100" step="0.5" value="10" oninput="calcManualMfg()"/></div>
     <div id="mfg-result" class="calc-result inv">—</div>
   </div>
-  <div class="sec inv">📊 محفظتي الذهبية</div>
+  <div class="sec inv" data-ar="📊 محفظتي الذهبية" data-en="📊 My Gold Portfolio">📊 محفظتي الذهبية</div>
   <div class="box">
-    <h3 class="inv">➕ أضف عملية شراء</h3>
+    <h3 class="inv" data-ar="➕ أضف عملية شراء" data-en="➕ Add Purchase">➕ أضف عملية شراء</h3>
     <div class="row">
       <input type="number" id="pf-grams" placeholder="الجرامات" min="0" step="0.1"/>
       <select id="pf-karat"><option value="24">عيار 24</option><option value="21" selected>عيار 21</option><option value="18">عيار 18</option></select>
@@ -475,155 +536,63 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     </div>
     <div id="pf-sync-err" style="color:var(--red);font-size:0.72rem;margin:8px 0;display:none"></div>
     <table class="portfolio-table" id="pf-table" style="display:none">
-      <thead><tr><th>جرام</th><th>عيار</th><th>سعر الشراء</th><th></th></tr></thead>
+      <thead><tr><th data-ar="جرام" data-en="Gram">جرام</th><th data-ar="عيار" data-en="Karat">عيار</th><th data-ar="سعر الشراء" data-en="Buy Price">سعر الشراء</th><th></th></tr></thead>
       <tbody id="pf-tbody"></tbody>
     </table>
     <div class="portfolio-summary" id="pf-summary" style="display:none">
-      <div class="ps-row"><span class="ps-label">إجمالي الجرامات</span><span class="ps-val" id="ps-total-grams">—</span></div>
-      <div class="ps-row"><span class="ps-label">متوسط سعر الجرام عليك</span><span class="ps-val" id="ps-avg-cost">—</span></div>
-      <div class="ps-row"><span class="ps-label">قيمة المحفظة بسعر اليوم</span><span class="ps-val" id="ps-current-val">—</span></div>
-      <div class="ps-row"><span class="ps-label">الربح / الخسارة الصافية</span><span class="ps-val" id="ps-profit">—</span></div>
+      <div class="ps-row"><span class="ps-label" data-ar="إجمالي الجرامات" data-en="Total Grams">إجمالي الجرامات</span><span class="ps-val" id="ps-total-grams">—</span></div>
+      <div class="ps-row"><span class="ps-label" data-ar="متوسط سعر الجرام عليك" data-en="Avg Cost/Gram">متوسط سعر الجرام عليك</span><span class="ps-val" id="ps-avg-cost">—</span></div>
+      <div class="ps-row"><span class="ps-label" data-ar="قيمة المحفظة بسعر اليوم" data-en="Current Value">قيمة المحفظة بسعر اليوم</span><span class="ps-val" id="ps-current-val">—</span></div>
+      <div class="ps-row"><span class="ps-label" data-ar="الربح / الخسارة الصافية" data-en="Net Profit/Loss">الربح / الخسارة الصافية</span><span class="ps-val" id="ps-profit">—</span></div>
     </div>
   </div>
 </div>
 
 <div class="panel" id="p4">
-  <div class="sec z">🕌 حاسبة الزكاة الشرعية المشتركة</div>
+  <div class="sec z" data-ar="🕌 حاسبة الزكاة الشرعية المشتركة" data-en="🕌 Zakat Calculator">🕌 حاسبة الزكاة الشرعية المشتركة</div>
   <div class="box">
-    <h3 class="z">أدخل ممتلكاتك بالتفصيل</h3>
-    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🥇 ذهب عيار 24 (جرام)</label><input type="number" id="z-gold-24" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
-    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🥇 ذهب عيار 21 (جرام)</label><input type="number" id="z-gold-21" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
-    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🥇 ذهب عيار 18 (جرام)</label><input type="number" id="z-gold-18" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
-    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🥇 ذهب عيار 14 (جرام)</label><input type="number" id="z-gold-14" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
-    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🪙 فضة (جرام)</label><input type="number" id="z-silver" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
-    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">💵 نقود (جنيه)</label><input type="number" id="z-cash" placeholder="0" min="0" oninput="calcZakat()"/></div>
+    <h3 class="z" data-ar="أدخل ممتلكاتك بالتفصيل" data-en="Enter your assets in detail">أدخل ممتلكاتك بالتفصيل</h3>
+    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🥇 <span data-ar="ذهب عيار 24 (جرام)" data-en="Gold 24K (grams)">ذهب عيار 24 (جرام)</span></label><input type="number" id="z-gold-24" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
+    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🥇 <span data-ar="ذهب عيار 21 (جرام)" data-en="Gold 21K (grams)">ذهب عيار 21 (جرام)</span></label><input type="number" id="z-gold-21" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
+    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🥇 <span data-ar="ذهب عيار 18 (جرام)" data-en="Gold 18K (grams)">ذهب عيار 18 (جرام)</span></label><input type="number" id="z-gold-18" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
+    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🥇 <span data-ar="ذهب عيار 14 (جرام)" data-en="Gold 14K (grams)">ذهب عيار 14 (جرام)</span></label><input type="number" id="z-gold-14" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
+    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">🪙 <span data-ar="فضة (جرام)" data-en="Silver (grams)">فضة (جرام)</span></label><input type="number" id="z-silver" placeholder="0" min="0" step="0.1" oninput="calcZakat()"/></div>
+    <div class="row"><label style="font-size:0.82rem;color:var(--muted);white-space:nowrap">💵 <span data-ar="نقود (جنيه)" data-en="Cash (EGP)">نقود (جنيه)</span></label><input type="number" id="z-cash" placeholder="0" min="0" oninput="calcZakat()"/></div>
     <div class="zakat-result-box" id="z-result-box" style="display:none">
-      <div class="zr-row"><span class="zr-label">نصاب الذهب (85 جم عيار 24)</span><span class="zr-val" id="z-nisab-gold">—</span></div>
-      <div class="zr-row"><span class="zr-label">قيمة ممتلكاتك الكلية</span><span class="zr-val" id="z-total-val">—</span></div>
-      <div class="zr-row"><span class="zr-label">وصلت النصاب؟</span><span class="zr-val" id="z-reached">—</span></div>
+      <div class="zr-row"><span class="zr-label" data-ar="نصاب الذهب (85 جم عيار 24)" data-en="Gold Nisab (85g 24K)">نصاب الذهب (85 جم عيار 24)</span><span class="zr-val" id="z-nisab-gold">—</span></div>
+      <div class="zr-row"><span class="zr-label" data-ar="قيمة ممتلكاتك الكلية" data-en="Total Asset Value">قيمة ممتلكاتك الكلية</span><span class="zr-val" id="z-total-val">—</span></div>
+      <div class="zr-row"><span class="zr-label" data-ar="وصلت النصاب؟" data-en="Reached Nisab?">وصلت النصاب؟</span><span class="zr-val" id="z-reached">—</span></div>
       <div class="nisab-bar-bg"><div class="nisab-bar" id="z-bar" style="width:0%"></div></div>
-      <div class="zr-row" style="margin-top:6px"><span class="zr-label">الزكاة المستحقة (2.5%)</span><span class="zr-val" id="z-due" style="font-size:1.1rem">—</span></div>
+      <div class="zr-row" style="margin-top:6px"><span class="zr-label" data-ar="الزكاة المستحقة (2.5%)" data-en="Zakat Due (2.5%)">الزكاة المستحقة (2.5%)</span><span class="zr-val" id="z-due" style="font-size:1.1rem">—</span></div>
     </div>
   </div>
 </div>
 
 <div class="fab-container">
   <div class="fab-menu" id="fabMenu">
-    <a href="https://wa.me/201554242320?text=Hello%20Youssef,%20I%20visited%20your%20Gold%20Scraper%20app%20and%20want%20to%20connect!" target="_blank" class="fab-item wa" aria-label="شات واتساب مباشر">
-      <span class="fab-label">WhatsApp Chat</span>
+    <a href="https://wa.me/201554242320?text=Hello%20Youssef,%20I%20visited%20your%20Gold%20Scraper%20app%20and%20want%20to%20connect!" target="_blank" class="fab-item wa" aria-label="WhatsApp">
+      <span class="fab-label">WhatsApp</span>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="22" height="22" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12.04 0C5.42 0 .04 5.38.04 12c0 2.115.553 4.176 1.603 5.992L0 24l6.165-1.617A11.95 11.95 0 0012.04 24C18.66 24 24.04 18.62 24.04 12S18.66 0 12.04 0zm0 21.788a9.74 9.74 0 01-4.97-1.363l-.357-.212-3.66.96.978-3.567-.232-.366A9.75 9.75 0 1121.79 12c0 5.392-4.388 9.788-9.75 9.788z"/></svg>
     </a>
-    <a href="tel:01554242320" class="fab-item ph" aria-label="اتصال هاتفي">
-      <span class="fab-label">Phone Call</span>
+    <a href="tel:01554242320" class="fab-item ph" aria-label="Phone">
+      <span class="fab-label">Phone</span>
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20" fill="white"><path d="M6.62 10.79a15.05 15.05 0 006.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
     </a>
   </div>
-  <button class="fab-main" id="fabMain" onclick="toggleFabMenu()" aria-label="تواصل مع المطور">
+  <button class="fab-main" id="fabMain" onclick="toggleFabMenu()" aria-label="Contact">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="26" height="26" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-3 12H7v-2h10v2zm0-3H7V9h10v2zm0-3H7V6h10v2z"/></svg>
   </button>
 </div>
 
-<!-- NEW: PWA Install Button -->
-<button id="pwa-install-btn" onclick="installPWA()" title="تثبيت التطبيق">
+<button id="pwa-install-btn" onclick="installPWA()" title="Install App">
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
 </button>
 
 <footer>
-  <p>أسعار استرشادية · تُحدَّث تلقائياً كل 5 دقائق · سعر النهارده © <span id="footer-year">2026</span></p>
+  <p><span data-ar="أسعار استرشادية · تُحدَّث تلقائياً كل 5 دقائق · سعر النهارده ©" data-en="Indicative prices · Auto-updates every 5 min · Sor Al-Naharda ©">أسعار استرشادية · تُحدَّث تلقائياً كل 5 دقائق · سعر النهارده ©</span> <span id="footer-year">2026</span></p>
   <div style="margin-top:5px;color:var(--muted);font-size:0.72rem;">Developed by: <span style="color:var(--gold);font-weight:bold;">Youssef Mosaad</span></div>
 </footer>
-<script>
-// ====== الثوابت ======
-const CURRENCIES=[
-  {code:'USD',name:'دولار أمريكي',flag:'🇺🇸'},{code:'EUR',name:'يورو',flag:'🇪🇺'},{code:'GBP',name:'جنيه إسترليني',flag:'🇬🇧'},
-  {code:'SAR',name:'ريال سعودي',flag:'🇸🇦'},{code:'AED',name:'درهم إماراتي',flag:'🇦🇪'},{code:'KWD',name:'دينار كويتي',flag:'🇰🇼'},
-  {code:'QAR',name:'ريال قطري',flag:'🇶🇦'},{code:'JOD',name:'دينار أردني',flag:'🇯🇴'},{code:'TRY',name:'ليرة تركية',flag:'🇹🇷'},
-  {code:'CNY',name:'يوان صيني',flag:'🇨🇳'},{code:'CHF',name:'فرنك سويسري',flag:'🇨🇭'}
-];
-const INV_PRODUCTS={
-  jineh:{label:'الجنيه الذهب',grams:8,karat:21,mfg_pct:0.06,cashback_pct:0.04},
-  '5g':{label:'سبيكة 5 جم',grams:5,karat:24,mfg_pct:0.08,cashback_pct:0.03},
-  '10g':{label:'سبيكة 10 جم',grams:10,karat:24,mfg_pct:0.05,cashback_pct:0.03},
-  oz:{label:'سبيكة أونصة',grams:31.1035,karat:24,mfg_pct:0.04,cashback_pct:0.025},
-  '50g':{label:'سبيكة 50 جم',grams:50,karat:24,mfg_pct:0.03,cashback_pct:0.02},
-  '100g':{label:'سبيكة 100 جم',grams:100,karat:24,mfg_pct:0.025,cashback_pct:0.015}
-};
-
-const SCRAPER_BASE='https://gold-scraper-server.onrender.com';
-const fmt=(n,d=2)=>Number(n).toLocaleString('ar-EG',{minimumFractionDigits:d,maximumFractionDigits:d});
-const $=id=>document.getElementById(id);
-
-// ====== الحالة ======
-let goldPrices={24:0,21:0,18:0,14:0};
-let silverPrices={999:0,925:0,800:0};
-let prevRates={};
-let sentimentVotes={buy:60,sell:40};
-let userVoted=false;
-let priceHistory=[];
-let lastRates={};
-let currentUserId=null;
-let portfolio=[];
-let alerts=JSON.parse(localStorage.getItem('gold_alerts'))||[];
-let adsLoaded=false;
-let pwaDeferredPrompt=null;
-let dailyPrices={gold21:0,gold24:0,silver925:0,silver999:0};
-
-// ====== Toast System ======
-function showToast(msg,type='info',duration=3000){
-  const container=$('toast-container');
-  const toast=document.createElement('div');
-  toast.className='toast '+type;
-  toast.textContent=msg;
-  container.appendChild(toast);
-  requestAnimationFrame(()=>toast.classList.add('show'));
-  setTimeout(()=>{toast.classList.remove('show');setTimeout(()=>toast.remove(),300);},duration);
-}
-
-// ====== PWA Install ======
-window.addEventListener('beforeinstallprompt',(e)=>{
-  e.preventDefault();
-  pwaDeferredPrompt=e;
-  $('pwa-install-btn').classList.add('show');
-});
-function installPWA(){
-  if(!pwaDeferredPrompt){showToast('التطبيق مثبت بالفعل أو غير مدعوم','info');return;}
-  pwaDeferredPrompt.prompt();
-  pwaDeferredPrompt.userChoice.then((choice)=>{
-    if(choice.outcome==='accepted'){
-      showToast('✅ تم تثبيت التطبيق بنجاح!','success');
-      $('pwa-install-btn').classList.remove('show');
-    }
-    pwaDeferredPrompt=null;
-  });
-}
-
-// ====== Share ======
-async function shareApp(){
-  const shareData={title:'سعر النهارده',text:'تعرف على أسعار الذهب والفضة والعملات في مصر لحظة بلحظة!',url:window.location.href};
-  if(navigator.share){try{await navigator.share(shareData);}catch(e){}}
-  else{await navigator.clipboard.writeText(window.location.href);showToast('📋 تم نسخ الرابط!','success');}
-}
-
-// ====== Daily Change Tracking ======
-function saveDailyPrices(){
-  const today=new Date().toDateString();
-  const data={date:today,gold21:goldPrices[21],gold24:goldPrices[24],silver925:silverPrices[925],silver999:silverPrices[999]};
-  localStorage.setItem('sor_daily_prices',JSON.stringify(data));
-}
-function loadDailyPrices(){
-  const saved=localStorage.getItem('sor_daily_prices');
-  if(!saved) return null;
-  try{ return JSON.parse(saved); }catch(e){ return null; }
-}
-function calcDailyChange(current,previous){
-  if(!current||!previous||previous<=0) return {val:'—',cls:'flat',pct:0};
-  const diff=current-previous;
-  const pct=((diff/previous)*100).toFixed(2);
-  const cls=diff>0?'up':diff<0?'down':'flat';
-  const arrow=diff>0?'▲':diff<0?'▼':'━';
-  return {val:`${arrow} ${Math.abs(diff).toLocaleString('ar-EG',{maximumFractionDigits:0})} (${Math.abs(pct)}%)`,cls,pct};
-}
-function updateDailyChanges(){
+<script>function updateDailyChanges(){
   const prev=loadDailyPrices();
   if(!prev) return;
   const g21=calcDailyChange(goldPrices[21],prev.gold21);
@@ -631,75 +600,116 @@ function updateDailyChanges(){
   const s925=calcDailyChange(silverPrices[925],prev.silver925);
   const s999=calcDailyChange(silverPrices[999],prev.silver999);
 
-  $('gold-daily-val').textContent=goldPrices[21]?fmt(goldPrices[21],0)+' ج':'—';
-  $('gold-daily-change').textContent=g21.val; $('gold-daily-change').className='dchange '+g21.cls;
-  $('gold24-daily-val').textContent=goldPrices[24]?fmt(goldPrices[24],0)+' ج':'—';
-  $('gold24-daily-change').textContent=g24.val; $('gold24-daily-change').className='dchange '+g24.cls;
-  $('silver-daily-val').textContent=silverPrices[925]?fmt(silverPrices[925],2)+' ج':'—';
-  $('silver-daily-change').textContent=s925.val; $('silver-daily-change').className='dchange '+s925.cls;
-  $('silver999-daily-val').textContent=silverPrices[999]?fmt(silverPrices[999],2)+' ج':'—';
-  $('silver999-daily-change').textContent=s999.val; $('silver999-daily-change').className='dchange '+s999.cls;
+  const el1=$('gold-daily-val'); if(el1) el1.textContent=goldPrices[21]?fmt(goldPrices[21],0)+' ج':'—';
+  const el2=$('gold-daily-change'); if(el2){ el2.textContent=g21.val; el2.className='dchange '+g21.cls; }
+  const el3=$('gold24-daily-val'); if(el3) el3.textContent=goldPrices[24]?fmt(goldPrices[24],0)+' ج':'—';
+  const el4=$('gold24-daily-change'); if(el4){ el4.textContent=g24.val; el4.className='dchange '+g24.cls; }
+  const el5=$('silver-daily-val'); if(el5) el5.textContent=silverPrices[925]?fmt(silverPrices[925],2)+' ج':'—';
+  const el6=$('silver-daily-change'); if(el6){ el6.textContent=s925.val; el6.className='dchange '+s925.cls; }
+  const el7=$('silver999-daily-val'); if(el7) el7.textContent=silverPrices[999]?fmt(silverPrices[999],2)+' ج':'—';
+  const el8=$('silver999-daily-change'); if(el8){ el8.textContent=s999.val; el8.className='dchange '+s999.cls; }
 }
 
-// ====== Mini Chart (Canvas) ======
-function drawMiniChart(){
-  const canvas=$('mini-chart');
-  if(!canvas||priceHistory.length<2) return;
-  const ctx=canvas.getContext('2d');
-  const dpr=window.devicePixelRatio||1;
-  const rect=canvas.getBoundingClientRect();
-  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
-  ctx.scale(dpr,dpr);
-  const w=rect.width,h=rect.height;
-  const pad=10;
-  const min=Math.min(...priceHistory),max=Math.max(...priceHistory);
-  const range=max-min||1;
-
-  ctx.clearRect(0,0,w,h);
-  // Grid
-  ctx.strokeStyle='#2a2a2a';ctx.lineWidth=0.5;
-  for(let i=0;i<5;i++){const y=pad+(h-2*pad)*(i/4);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}
-  // Line
-  ctx.strokeStyle=priceHistory[priceHistory.length-1]>=priceHistory[0]?varToHex('--green'):varToHex('--red');
-  ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
-  ctx.beginPath();
-  priceHistory.forEach((p,i)=>{
-    const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
-    const y=pad+(h-2*pad)*(1-(p-min)/range);
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  // Fill
-  ctx.lineTo(w-pad,h-pad);ctx.lineTo(pad,h-pad);ctx.closePath();
-  const grad=ctx.createLinearGradient(0,pad,0,h-pad);
-  grad.addColorStop(0,priceHistory[priceHistory.length-1]>=priceHistory[0]?'rgba(61,214,140,0.2)':'rgba(240,84,84,0.2)');
-  grad.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=grad;ctx.fill();
-  // Points
-  priceHistory.forEach((p,i)=>{
-    const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
-    const y=pad+(h-2*pad)*(1-(p-min)/range);
-    ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle=varToHex('--gold');ctx.fill();
+// ====== Chart.js Integration ======
+function initGoldChart(){
+  const ctx=$('gold-chart');
+  if(!ctx||typeof Chart==='undefined') return;
+  goldChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:priceHistory.map((_,i)=>'Day '+(i+1)),
+      datasets:[{
+        label:currentLang==='ar'?'سعر الذهب 24':'Gold 24K Price',
+        data:priceHistory,
+        borderColor:'#C9A84C',
+        backgroundColor:'rgba(201,168,76,0.1)',
+        borderWidth:2,
+        fill:true,
+        tension:0.4,
+        pointRadius:3,
+        pointBackgroundColor:'#C9A84C',
+        pointBorderColor:'#fff',
+        pointBorderWidth:1
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+      scales:{
+        x:{display:false},
+        y:{display:true,grid:{color:'#2a2a2a'},ticks:{color:'#777',font:{size:10}}}
+      },
+      interaction:{mode:'nearest',axis:'x',intersect:false}
+    }
   });
 }
-function varToHex(v){const m={'--green':'#3DD68C','--red':'#F05454','--gold':'#C9A84C'};return m[v]||v;}
+function updateGoldChart(){
+  if(!goldChart) return;
+  goldChart.data.labels=priceHistory.map((_,i)=>'Day '+(i+1));
+  goldChart.data.datasets[0].data=priceHistory;
+  goldChart.data.datasets[0].label=currentLang==='ar'?'سعر الذهب 24':'Gold 24K Price';
+  goldChart.update('none');
+}
+function initSilverChart(){
+  const ctx=$('silver-chart');
+  if(!ctx||typeof Chart==='undefined') return;
+  silverChart=new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:silverHistory.map((_,i)=>'Day '+(i+1)),
+      datasets:[{
+        label:currentLang==='ar'?'سعر الفضة 925':'Silver 925 Price',
+        data:silverHistory,
+        borderColor:'#A8B8C8',
+        backgroundColor:'rgba(168,184,200,0.1)',
+        borderWidth:2,
+        fill:true,
+        tension:0.4,
+        pointRadius:3,
+        pointBackgroundColor:'#A8B8C8',
+        pointBorderColor:'#fff',
+        pointBorderWidth:1
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false}},
+      scales:{
+        x:{display:false},
+        y:{display:true,grid:{color:'#2a2a2a'},ticks:{color:'#777',font:{size:10}}}
+      },
+      interaction:{mode:'nearest',axis:'x',intersect:false}
+    }
+  });
+}
+function updateSilverChart(){
+  if(!silverChart) return;
+  silverChart.data.labels=silverHistory.map((_,i)=>'Day '+(i+1));
+  silverChart.data.datasets[0].data=silverHistory;
+  silverChart.data.datasets[0].label=currentLang==='ar'?'سعر الفضة 925':'Silver 925 Price';
+  silverChart.update('none');
+}
 
-// ====== مساعدات ======
+// ====== Helpers ======
 function updateTime(){
   const n=new Date();
-  $('last-update').textContent='آخر تحديث: '+n.toLocaleTimeString('ar-EG',{hour:'2-digit',minute:'2-digit'});
+  $('last-update').textContent=(currentLang==='ar'?'آخر تحديث: ':'Last update: ')+n.toLocaleTimeString(currentLang==='ar'?'ar-EG':'en-US',{hour:'2-digit',minute:'2-digit'});
 }
 function showTab(i){
   document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('active',i===j));
   document.querySelectorAll('.panel').forEach((p,j)=>p.classList.toggle('active',i===j));
-  if(i===0) loadAd('ad-gold'); if(i===1) loadAd('ad-silver'); if(i===2) loadAd('ad-cur');
+  if(i===0) loadAd('ad-gold');
+  if(i===1) loadAd('ad-silver');
+  if(i===2) loadAd('ad-cur');
 }
 function toggleFabMenu(){
   $('fabMain').classList.toggle('active');
   $('fabMenu').classList.toggle('open');
 }
 
-// ====== AdSense Lazy Loading ======
+// ====== AdSense ======
 function loadAd(slotId){
   if(adsLoaded) return;
   const slot=document.getElementById(slotId);
@@ -716,7 +726,7 @@ function initAds(){
   if(activePanel){ const adSlot=activePanel.querySelector('.ad-slot'); if(adSlot) loadAd(adSlot.id); }
 }
 
-// ====== تحميل البيانات ======
+// ====== Data Loading with Stale-while-revalidate ======
 async function loadGold(){
   try{
     const r=await fetch(`${SCRAPER_BASE}/api/gold`);
@@ -725,13 +735,13 @@ async function loadGold(){
     goldPrices={24:d[24],21:d[21],18:d[18],14:d[14]};
     if(!goldPrices[14] && goldPrices[24]) goldPrices[14]=goldPrices[24]*(14/24);
     const g24=goldPrices[24];
-    if(!g24) throw new Error('لا توجد بيانات ذهب');
+    if(!g24) throw new Error('No gold data');
     const sellMap={24:d['24_sell'],21:d['21_sell'],18:d['18_sell'],14:d['14_sell']};
-    const rows=[{k:'عيار 24',v:24,hl:false},{k:'عيار 21',v:21,hl:true},{k:'عيار 18',v:18,hl:false},{k:'عيار 14',v:14,hl:false}];
+    const rows=[{k:currentLang==='ar'?'عيار 24':'24K',v:24,hl:false},{k:currentLang==='ar'?'عيار 21':'21K',v:21,hl:true},{k:currentLang==='ar'?'عيار 18':'18K',v:18,hl:false},{k:currentLang==='ar'?'عيار 14':'14K',v:14,hl:false}];
     $('gold-tbody').innerHTML=rows.map(row=>{
       const buy=goldPrices[row.v];
       const sell=sellMap[row.v]||(buy?buy*1.012:null);
-      if(!buy) return `<tr><td class="karat-label">${row.k}</td><td colspan="3" style="color:var(--muted)">لا يوجد سعر</td></tr>`;
+      if(!buy) return `<tr><td class="karat-label">${row.k}</td><td colspan="3" style="color:var(--muted)">${t('noPrice')}</td></tr>`;
       const sp=sell-buy;
       return `<tr class="${row.hl?'hl-row':''}"><td class="karat-label">${row.k}</td><td class="buy-price">${fmt(buy,0)}</td><td class="sell-price">${fmt(sell,0)}</td><td class="spread-val">${fmt(sp,0)}</td></tr>`;
     }).join('');
@@ -743,7 +753,8 @@ async function loadGold(){
     priceHistory.push(g24);
     if(priceHistory.length>7) priceHistory.shift();
     calcSentiment(); calcGold(); calcInvestment(); calcManualMfg(); updatePortfolio(); calcZakat(); checkAlerts('gold');
-    updateDailyChanges(); drawMiniChart(); saveDailyPrices();
+    updateDailyChanges(); saveDailyPrices();
+    if(!goldChart) initGoldChart(); else updateGoldChart();
   }catch(e){console.error('Gold load error:',e.message); $('err-gold').style.display='block';}
 }
 
@@ -753,7 +764,7 @@ async function loadSilver(){
     const d=await response.json();
     console.log("Silver Data:",d);
     silverPrices={999:0,925:0,800:0};
-    const rows=[{k:'عيار 999',v:'999'},{k:'عيار 925',v:'925'},{k:'عيار 800',v:'800'}];
+    const rows=[{k:currentLang==='ar'?'عيار 999':'999',v:'999'},{k:currentLang==='ar'?'عيار 925':'925',v:'925'},{k:currentLang==='ar'?'عيار 800':'800',v:'800'}];
     const tbody=$('silver-tbody');
     if(tbody){
       tbody.innerHTML=rows.map(row=>{
@@ -762,7 +773,7 @@ async function loadSilver(){
         const val3=parseFloat(d[row.v+'_buy']||d['buy_'+row.v]);
         let prices=[val1,val2,val3].filter(p=>!isNaN(p)&&p>0);
         let buy=0,sell=0;
-        if(prices.length===0) return `<tr><td class="karat-label">${row.k}</td><td colspan="3" style="color:var(--muted)">لا يوجد سعر</td></tr>`;
+        if(prices.length===0) return `<tr><td class="karat-label">${row.k}</td><td colspan="3" style="color:var(--muted)">${t('noPrice')}</td></tr>`;
         else if(prices.length===1){sell=prices[0];buy=sell*0.95;}
         else{buy=Math.min(...prices);sell=Math.max(...prices);}
         silverPrices[row.v]=buy;
@@ -774,6 +785,9 @@ async function loadSilver(){
     $('s-screen').textContent=d.ounceUsd?('$'+fmt(d.ounceUsd,2)):'—';
     $('err-silver').style.display='none';
     calcSilver(); calcZakat(); checkAlerts('silver'); updateDailyChanges(); saveDailyPrices();
+    silverHistory.push(silverPrices[925]||0);
+    if(silverHistory.length>7) silverHistory.shift();
+    if(!silverChart) initSilverChart(); else updateSilverChart();
   }catch(e){console.error('Silver load error:',e.message); $('err-silver').style.display='block';}
 }
 
@@ -798,12 +812,13 @@ async function loadCurrencies(){
       prevRates[cur.code]=egp;
       const card=document.createElement('div');
       card.className='currency-card';
-      card.innerHTML=`<div class="cur-left"><div class="cur-flag">${cur.flag}</div><div><div class="cur-name">${cur.name}</div><div class="cur-code">${cur.code}</div></div></div><div class="cur-right"><div class="cur-price">${fmt(egp,2)}</div><div class="cur-change ${cc}">${cs} ${Math.abs(pct)}%</div></div>`;
+      const name=currentLang==='ar'?cur.name:cur.nameEn;
+      card.innerHTML=`<div class="cur-left"><div class="cur-flag">${cur.flag}</div><div><div class="cur-name">${name}</div><div class="cur-code">${cur.code}</div></div></div><div class="cur-right"><div class="cur-price">${fmt(egp,2)}</div><div class="cur-change ${cc}">${cs} ${Math.abs(pct)}%</div></div>`;
       container.appendChild(card);
       tItems.push(`<span class="ticker-item">${cur.flag} ${cur.code} <span class="val">${fmt(egp,2)}</span></span>`);
     });
-    if(goldPrices[21]>0) tItems.unshift(`<span class="ticker-item">🥇 ذهب ٢١ <span class="val">${fmt(goldPrices[21],0)}</span></span>`);
-    if(silverPrices[925]>0) tItems.unshift(`<span class="ticker-item">🪙 فضة ٩٢٥ <span class="val s">${fmt(silverPrices[925],2)}</span></span>`);
+    if(goldPrices[21]>0) tItems.unshift(`<span class="ticker-item">${currentLang==='ar'?'🥇 ذهب ٢١':'🥇 Gold 21'} <span class="val">${fmt(goldPrices[21],0)}</span></span>`);
+    if(silverPrices[925]>0) tItems.unshift(`<span class="ticker-item">${currentLang==='ar'?'🪙 فضة ٩٢٥':'🪙 Silver 925'} <span class="val s">${fmt(silverPrices[925],2)}</span></span>`);
     $('ticker').innerHTML=[...tItems,...tItems].join('');
     lastRates=rates; checkAlerts('cur',rates);
   }catch(e){console.error('Currency load error:',e.message); $('err-cur').style.display='block';}
@@ -811,36 +826,37 @@ async function loadCurrencies(){
 
 async function loadAll(){
   const btn=$('refresh-btn');
-  btn.classList.add('loading'); btn.textContent='⏳ جار التحديث...';
+  btn.classList.add('loading'); btn.textContent=currentLang==='ar'?'⏳ جار التحديث...':'⏳ Updating...';
   ['err-gold','err-silver','err-cur'].forEach(id=>$(id).style.display='none');
   await Promise.allSettled([loadGold(),loadSilver(),loadCurrencies()]);
   updateTime();
-  btn.classList.remove('loading'); btn.textContent='🔄 تحديث';
+  btn.classList.remove('loading'); btn.textContent=currentLang==='ar'?'🔄 تحديث':'🔄 Refresh';
 }
 
-// ====== الحاسبات ======
+// ====== Calculators ======
 function calcGold(){
   const g=parseFloat($('gc-grams').value),k=$('gc-karat').value;
-  $('gc-result').textContent=(!g||g<=0||!goldPrices[k])?'—':fmt(g*goldPrices[k],0)+' جنيه مصري';
+  $('gc-result').textContent=(!g||g<=0||!goldPrices[k])?'—':fmt(g*goldPrices[k],0)+' '+t('egp');
 }
 function calcSilver(){
   const g=parseFloat($('sc-grams').value),k=$('sc-karat').value;
   const price=silverPrices[k];
   if(!g||g<=0){$('sc-result').textContent='—'; return;}
-  if(!price||price<=0){$('sc-result').textContent='سعر الفضة لسه بيتحمل...'; return;}
-  $('sc-result').textContent=fmt(g*price,2)+' جنيه مصري';
+  if(!price||price<=0){$('sc-result').textContent=t('priceLoading'); return;}
+  $('sc-result').textContent=fmt(g*price,2)+' '+t('egp');
 }
 function calcInvestment(){
   const prod=INV_PRODUCTS[$('inv-product').value];
   const qty=parseInt($('inv-qty').value)||1;
-  if(!goldPrices[prod.karat]){$('inv-result').textContent='جار التحميل...'; return;}
+  if(!goldPrices[prod.karat]){$('inv-result').textContent=t('loading'); return;}
   const basePrice=goldPrices[prod.karat]*prod.grams;
   const mfgCost=basePrice*prod.mfg_pct;
   const totalPerUnit=basePrice+mfgCost;
   const totalAll=totalPerUnit*qty;
   const cashback=basePrice*prod.cashback_pct*qty;
   const netCost=totalAll-cashback;
-  $('inv-result').innerHTML=`<div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px">${prod.label} × ${qty}</div><div>سعر الذهب الخام: <span style="color:var(--gold-lt)">${fmt(basePrice*qty,0)} ج</span></div><div>مصنعية متوسطة (${(prod.mfg_pct*100).toFixed(1)}%): <span style="color:var(--red)">${fmt(mfgCost*qty,0)} ج</span></div><div>الإجمالي: <span style="color:var(--text);font-size:1.1rem;font-weight:900">${fmt(totalAll,0)} ج</span></div><div style="margin-top:6px">كاش باك متوقع عند البيع: <span style="color:var(--green)">+${fmt(cashback,0)} ج</span></div><div>التكلفة الفعلية الصافية: <span style="color:var(--gold-lt);font-size:1.05rem;font-weight:900">${fmt(netCost,0)} ج</span></div>`;
+  const label=currentLang==='ar'?prod.label:prod.labelEn;
+  $('inv-result').innerHTML=`<div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px">${label} × ${qty}</div><div>${currentLang==='ar'?'سعر الذهب الخام':'Gold Raw Price'}: <span style="color:var(--gold-lt)">${fmt(basePrice*qty,0)} ج</span></div><div>${currentLang==='ar'?'مصنعية متوسطة':'Avg Manufacturing'} (${(prod.mfg_pct*100).toFixed(1)}%): <span style="color:var(--red)">${fmt(mfgCost*qty,0)} ج</span></div><div>${currentLang==='ar'?'الإجمالي':'Total'}: <span style="color:var(--text);font-size:1.1rem;font-weight:900">${fmt(totalAll,0)} ج</span></div><div style="margin-top:6px">${currentLang==='ar'?'كاش باك متوقع عند البيع':'Expected cashback'}: <span style="color:var(--green)">+${fmt(cashback,0)} ج</span></div><div>${currentLang==='ar'?'التكلفة الفعلية الصافية':'Net Actual Cost'}: <span style="color:var(--gold-lt);font-size:1.05rem;font-weight:900">${fmt(netCost,0)} ج</span></div>`;
 }
 function calcManualMfg(){
   const grams=parseFloat($('mfg-grams').value);
@@ -851,15 +867,15 @@ function calcManualMfg(){
   if(!grams||grams<=0){result.textContent='—'; return;}
   if(mfgPct===''||isNaN(mfgPct)||mfgPct<0){result.textContent='—'; return;}
   const gramPrice=(manualPrice&&manualPrice>0)?manualPrice:goldPrices[karat];
-  if(!gramPrice){result.textContent='سعر اليوم لسه بيتحمل، استنى لحظة أو اكتب السعر يدوياً'; return;}
+  if(!gramPrice){result.textContent=currentLang==='ar'?'سعر اليوم لسه بيتحمل، استنى لحظة أو اكتب السعر يدوياً':'Price still loading, wait or enter manually'; return;}
   const rawCost=grams*gramPrice;
   const mfgCost=rawCost*(mfgPct/100);
   const finalPrice=rawCost+mfgCost;
-  if(isNaN(rawCost)||isNaN(mfgCost)||isNaN(finalPrice)){result.textContent='تأكد من إدخال أرقام صحيحة'; return;}
-  result.innerHTML=`<div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px">${fmt(grams,2)} جرام — عيار ${karat}${(!manualPrice||manualPrice<=0)?' (سعر اليوم)':' (سعر مُدخل)'}</div><div>سعر الذهب: <span style="color:var(--gold-lt)">${fmt(gramPrice,0)} ج/جرام</span></div><div>تكلفة الذهب الخام: <span style="color:var(--gold-lt)">${fmt(rawCost,0)} ج</span></div><div>المصنعية (${fmt(mfgPct,1)}%): <span style="color:var(--red)">${fmt(mfgCost,0)} ج</span></div><div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">السعر النهائي اللي هتدفعه: <span style="color:var(--green);font-size:1.2rem;font-weight:900">${fmt(finalPrice,0)} ج</span></div>`;
+  if(isNaN(rawCost)||isNaN(mfgCost)||isNaN(finalPrice)){result.textContent=currentLang==='ar'?'تأكد من إدخال أرقام صحيحة':'Enter valid numbers'; return;}
+  result.innerHTML=`<div style="font-size:0.8rem;color:var(--muted);margin-bottom:6px">${fmt(grams,2)} ${currentLang==='ar'?'جرام':'grams'} — ${currentLang==='ar'?'عيار':'Karat'} ${karat}${(!manualPrice||manualPrice<=0)?' ('+(currentLang==='ar'?'سعر اليوم':'Today Price')+')':' ('+(currentLang==='ar'?'سعر مُدخل':'Manual')+')'}</div><div>${currentLang==='ar'?'سعر الذهب':'Gold Price'}: <span style="color:var(--gold-lt)">${fmt(gramPrice,0)} ج/${currentLang==='ar'?'جرام':'g'}</span></div><div>${currentLang==='ar'?'تكلفة الذهب الخام':'Raw Gold Cost'}: <span style="color:var(--gold-lt)">${fmt(rawCost,0)} ج</span></div><div>${currentLang==='ar'?'المصنعية':'Manufacturing'} (${fmt(mfgPct,1)}%): <span style="color:var(--red)">${fmt(mfgCost,0)} ج</span></div><div style="margin-top:6px;border-top:1px solid var(--border);padding-top:6px">${currentLang==='ar'?'السعر النهائي اللي هتدفعه':'Final Price'}: <span style="color:var(--green);font-size:1.2rem;font-weight:900">${fmt(finalPrice,0)} ج</span></div>`;
 }
 
-// ====== المحفظة ======
+// ====== Portfolio ======
 function getPortfolioKey(userId){ return userId?'gold_portfolio_'+userId:'gold_portfolio_guest'; }
 let supabaseClient=null;
 function getSupabase(){ if(supabaseClient) return supabaseClient; if(window.supabase) supabaseClient=window.supabase; return supabaseClient; }
@@ -871,7 +887,7 @@ async function loadPortfolioForUser(userId){
   if(sb){
     try{
       const {data,error}=await sb.from('portfolios').select('*').eq('user_id',userId).order('created_at',{ascending:false});
-      if(error){ console.error('[Sync] Supabase error:',error); showSyncError('محفظة غير متزامنة: تأكد من تشغيل setup_database.sql'); }
+      if(error){ console.error('[Sync] Supabase error:',error); showSyncError(currentLang==='ar'?'محفظة غير متزامنة: تأكد من تشغيل setup_database.sql':'Portfolio not synced'); }
       else if(data){ portfolio=data.map(row=>({id:row.id,grams:row.grams,karat:row.karat,buyPrice:row.buy_price})); updatePortfolio(); return; }
     }catch(e){ console.error('[Sync] Exception:',e); }
   }
@@ -885,7 +901,7 @@ function savePortfolio(){ if(!currentUserId) return; localStorage.setItem(getPor
 
 async function addPortfolio(){
   const g=parseFloat($('pf-grams').value),k=parseInt($('pf-karat').value),p=parseFloat($('pf-price').value);
-  if(!g||!p||g<=0||p<=0){alert('اكتب الجرامات والسعر'); return;}
+  if(!g||!p||g<=0||p<=0){alert(currentLang==='ar'?'اكتب الجرامات والسعر':'Enter grams and price'); return;}
   const tempId=Date.now();
   portfolio.push({id:tempId,grams:g,karat:k,buyPrice:p});
   $('pf-grams').value=''; $('pf-price').value='';
@@ -906,20 +922,20 @@ async function removePortfolio(id){
 function updatePortfolio(){
   if(!portfolio.length){$('pf-table').style.display='none'; $('pf-summary').style.display='none'; return;}
   $('pf-table').style.display='table'; $('pf-summary').style.display='block';
-  $('pf-tbody').innerHTML=portfolio.map(p=>`<tr><td>${fmt(p.grams,1)}</td><td>عيار ${p.karat}</td><td>${fmt(p.buyPrice,0)}</td><td><button class="btn red" onclick="removePortfolio(${p.id})">✕</button></td></tr>`).join('');
+  $('pf-tbody').innerHTML=portfolio.map(p=>`<tr><td>${fmt(p.grams,1)}</td><td>${currentLang==='ar'?'عيار':'Karat'} ${p.karat}</td><td>${fmt(p.buyPrice,0)}</td><td><button class="btn red" onclick="removePortfolio(${p.id})">✕</button></td></tr>`).join('');
   const totalGrams=portfolio.reduce((s,p)=>s+p.grams,0);
   const totalCost=portfolio.reduce((s,p)=>s+p.grams*p.buyPrice,0);
   const avgCost=totalCost/totalGrams;
   const currentVal=portfolio.reduce((s,p)=>{ const price=goldPrices[p.karat]||goldPrices[21]||0; return s+p.grams*price; },0);
   const profit=currentVal-totalCost;
-  $('ps-total-grams').textContent=fmt(totalGrams,2)+' جرام';
-  $('ps-avg-cost').textContent=fmt(avgCost,0)+' ج/جرام';
-  $('ps-current-val').textContent=fmt(currentVal,0)+' جنيه';
+  $('ps-total-grams').textContent=fmt(totalGrams,2)+' '+(currentLang==='ar'?'جرام':'grams');
+  $('ps-avg-cost').textContent=fmt(avgCost,0)+' ج/'+(currentLang==='ar'?'جرام':'g');
+  $('ps-current-val').textContent=fmt(currentVal,0)+' '+(currentLang==='ar'?'جنيه':'EGP');
   $('ps-profit').style.color=profit>=0?'var(--green)':'var(--red)';
-  $('ps-profit').textContent=(profit>=0?'+':'')+fmt(profit,0)+' جنيه';
+  $('ps-profit').textContent=(profit>=0?'+':'')+fmt(profit,0)+' '+(currentLang==='ar'?'جنيه':'EGP');
 }
 
-// ====== Sentiment with LocalStorage ======
+// ====== Sentiment ======
 function loadSentimentVotes(){
   const saved=localStorage.getItem('sor_sentiment_votes');
   if(saved){ try{ sentimentVotes=JSON.parse(saved); }catch(e){} }
@@ -945,9 +961,9 @@ function calcSentiment(){
   const finalScore=(score+voteScore)/2;
   $('sentiment-bar').style.width=finalScore+'%';
   const v=$('sentiment-verdict');
-  if(finalScore<35){v.className='sentiment-verdict buy'; v.textContent='✅ السعر في منطقة شراء جيدة';}
-  else if(finalScore>65){v.className='sentiment-verdict sell'; v.textContent='⚠️ السعر مرتفع — يُنصح بالانتظار';}
-  else{v.className='sentiment-verdict neutral'; v.textContent='↔️ السوق محايد — متابعة مستمرة';}
+  if(finalScore<35){v.className='sentiment-verdict buy'; v.textContent=currentLang==='ar'?'✅ السعر في منطقة شراء جيدة':'✅ Good buying zone';}
+  else if(finalScore>65){v.className='sentiment-verdict sell'; v.textContent=currentLang==='ar'?'⚠️ السعر مرتفع — يُنصح بالانتظار':'⚠️ Price high — wait';}
+  else{v.className='sentiment-verdict neutral'; v.textContent=currentLang==='ar'?'↔️ السوق محايد — متابعة مستمرة':'↔️ Neutral — keep watching';}
 }
 function vote(type){
   if(userVoted) return;
@@ -958,7 +974,7 @@ function vote(type){
   calcSentiment();
 }
 
-// ====== الزكاة ======
+// ====== Zakat ======
 function calcZakat(){
   const zg24=parseFloat($('z-gold-24').value)||0;
   const zg21=parseFloat($('z-gold-21').value)||0;
@@ -977,36 +993,36 @@ function calcZakat(){
   const barPct=Math.min((totalVal/nisabGold)*100,100);
   $('z-nisab-gold').textContent=fmt(nisabGold,0)+' ج';
   $('z-total-val').textContent=fmt(totalVal,0)+' ج';
-  $('z-reached').textContent=reached?'✅ نعم، وجبت عليك الزكاة':'❌ لم تبلغ النصاب بعد';
+  $('z-reached').textContent=reached?(currentLang==='ar'?'✅ نعم، وجبت عليك الزكاة':'✅ Yes, Zakat is due'):(currentLang==='ar'?'❌ لم تبلغ النصاب بعد':'❌ Nisab not reached');
   $('z-reached').style.color=reached?'var(--green)':'var(--red)';
   $('z-bar').style.width=barPct+'%';
-  $('z-due').textContent=reached?fmt(totalVal*0.025,0)+' جنيه':'لا زكاة';
+  $('z-due').textContent=reached?fmt(totalVal*0.025,0)+' '+(currentLang==='ar'?'جنيه':'EGP'):(currentLang==='ar'?'لا زكاة':'No Zakat');
   $('z-due').style.color=reached?'var(--purple)':'var(--muted)';
 }
 
-// ====== التنبيهات ======
+// ====== Alerts ======
 function addAlert(type){
   let karat,price,dir,label;
-  if(type==='gold'){karat=$('ag-karat').value; price=parseFloat($('ag-price').value); dir=$('ag-dir').value; label='ذهب '+karat;}
-  else if(type==='silver'){karat=$('as-karat').value; price=parseFloat($('as-price').value); dir=$('as-dir').value; label='فضة '+karat;}
+  if(type==='gold'){karat=$('ag-karat').value; price=parseFloat($('ag-price').value); dir=$('ag-dir').value; label=(currentLang==='ar'?'ذهب ':'Gold ')+karat;}
+  else if(type==='silver'){karat=$('as-karat').value; price=parseFloat($('as-price').value); dir=$('as-dir').value; label=(currentLang==='ar'?'فضة ':'Silver ')+karat;}
   else{karat=$('ac-code').value; price=parseFloat($('ac-price').value); dir=$('ac-dir').value; label=karat;}
-  if(!price||price<=0){alert('اكتب سعراً صحيحاً'); return;}
+  if(!price||price<=0){alert(currentLang==='ar'?'اكتب سعراً صحيحاً':'Enter valid price'); return;}
   alerts.push({id:Date.now(),type,karat,price,dir,label,triggered:false});
   localStorage.setItem('gold_alerts',JSON.stringify(alerts));
   renderAlerts();
-  showToast('✅ تم إضافة التنبيه','success');
+  showToast(currentLang==='ar'?'✅ تم إضافة التنبيه':'✅ Alert added','success');
   if(window.Notification&&Notification.permission==='default') Notification.requestPermission();
 }
 function removeAlert(id){
   alerts=alerts.filter(a=>a.id!==id);
   localStorage.setItem('gold_alerts',JSON.stringify(alerts));
   renderAlerts();
-  showToast('🗑️ تم حذف التنبيه','info');
+  showToast(currentLang==='ar'?'🗑️ تم حذف التنبيه':'🗑️ Alert removed','info');
 }
 function renderAlerts(){
   ['gold','silver','cur'].forEach(type=>{
     const el=$('alerts-'+type); if(!el) return;
-    el.innerHTML=alerts.filter(a=>a.type===type).map(a=>`<div class="alert-item"><span>${a.label} — ${a.dir==='above'?'يصعد لـ':'ينزل لـ'} ${fmt(a.price,0)} ج</span><span style="cursor:pointer;color:var(--red);font-size:0.72rem" onclick="removeAlert(${a.id})">✕ حذف</span></div>`).join('');
+    el.innerHTML=alerts.filter(a=>a.type===type).map(a=>`<div class="alert-item"><span>${a.label} — ${a.dir==='above'?(currentLang==='ar'?'يصعد لـ':'Rises to'):(currentLang==='ar'?'ينزل لـ':'Falls to')} ${fmt(a.price,0)} ج</span><span style="cursor:pointer;color:var(--red);font-size:0.72rem" onclick="removeAlert(${a.id})">✕ ${currentLang==='ar'?'حذف':'Delete'}</span></div>`).join('');
   });
 }
 function checkAlerts(onlyType,rates){
@@ -1021,7 +1037,7 @@ function checkAlerts(onlyType,rates){
     if(hit){
       a.triggered=true;
       localStorage.setItem('gold_alerts',JSON.stringify(alerts));
-      const msg=`🔔 ${a.label} وصل ${fmt(cur,a.type==='silver'?2:0)} جنيه`;
+      const msg=`🔔 ${a.label} ${currentLang==='ar'?'وصل':'reached'} ${fmt(cur,a.type==='silver'?2:0)} ${currentLang==='ar'?'جنيه':'EGP'}`;
       if(window.Notification&&Notification.permission==='granted') new Notification('سعر النهارده',{body:msg});
       else{ showToast(msg,'success',5000); }
       renderAlerts();
@@ -1029,10 +1045,10 @@ function checkAlerts(onlyType,rates){
   });
 }
 
-// ====== تسجيل الدخول ======
+// ====== Login ======
 function openLoginModal(){ window.location.href="login.html"; }
 
-// ====== Service Worker Registration ======
+// ====== Service Worker ======
 if('serviceWorker' in navigator){
   window.addEventListener('load',()=>{
     navigator.serviceWorker.register('sw.js').then(reg=>{
@@ -1043,14 +1059,16 @@ if('serviceWorker' in navigator){
 
 // ====== Init ======
 if($('footer-year')) $('footer-year').textContent=new Date().getFullYear();
+loadLang();
+loadTheme();
+loadDataSaver();
 loadSentimentVotes();
 renderAlerts();
 loadAll();
-setInterval(loadAll,5*60*1000);
+timerId=setInterval(loadAll,refreshInterval);
 window.addEventListener('load',()=>{ setTimeout(initAds,2000); });
-window.addEventListener('resize',()=>{ drawMiniChart(); });
+window.addEventListener('resize',()=>{ if(goldChart) goldChart.resize(); if(silverChart) silverChart.resize(); });
 </script>
-
 <!-- Supabase Auth Module -->
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
