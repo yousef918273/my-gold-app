@@ -649,13 +649,15 @@ async function loadSilver() {
   try {
     const response = await fetch(`${SCRAPER_BASE}/api/silver`);
     const d = await response.json();
+    console.log("Silver Data:", d);
 
     if (!d || Object.keys(d).length === 0) throw new Error('لا توجد بيانات فضة');
 
+    // تحديث الأسعار بمرونة: إذا كان السيرفر يرسل قيم null، نضع 0
     silverPrices = {
-      999: d['999'] || 0,
-      925: d['925'] || 0,
-      800: d['800'] || 0
+      999: parseFloat(d['999']) || 0,
+      925: parseFloat(d['925']) || 0,
+      800: parseFloat(d['800']) || 0
     };
 
     const rows = [
@@ -667,31 +669,35 @@ async function loadSilver() {
     const tbody = $('silver-tbody');
     if (tbody) {
       tbody.innerHTML = rows.map(row => {
-        const valFromServer = silverPrices[row.v];
-        const sellFromServer = d[row.v + '_sell'];
-
-        // المنطق الذكي: نقارن القيمتين، الصغيرة نضعها "شراء" والكبيرة "بيع"
-        let buy = valFromServer;
-        let sell = sellFromServer;
-
-        if (sell && buy && sell < buy) {
-            // إذا كان "سعر البيع" من السيرفر أصغر من "سعر الشراء"، قم بالتبديل
-            let temp = buy;
-            buy = sell;
-            sell = temp;
-        } else if (!sell && buy) {
-            // إذا لم يوجد سعر بيع، نحسبه بزيادة بسيطة
-            sell = buy * 1.015;
+        const buy = silverPrices[row.v];
+        // نأخذ سعر البيع من السيرفر أو نحسبه إذا كان غير موجود
+        let sell = parseFloat(d[row.v + '_sell']) || (buy ? buy * 1.015 : 0);
+        
+        // --- تصحيح ذكي ---
+        // إذا كان سعر البيع (sell) أقل من سعر الشراء (buy)، قم بتبديلهما تلقائياً
+        let displayBuy = buy;
+        let displaySell = sell;
+        if (displaySell < displayBuy) {
+            displayBuy = sell;
+            displaySell = buy;
         }
 
         return `
           <tr class="${row.hl ? 'hl-row-s' : ''}">
             <td class="karat-label">${row.k}</td>
-            <td class="buy-price">${buy ? fmt(buy, 2) : '—'}</td>
-            <td class="sell-price">${sell ? fmt(sell, 2) : '—'}</td>
-            <td class="spread-val">${(sell && buy) ? fmt(sell - buy, 2) : '—'}</td>
+            <td class="buy-price">${displayBuy ? fmt(displayBuy, 2) : '—'}</td>
+            <td class="sell-price">${displaySell ? fmt(displaySell, 2) : '—'}</td>
+            <td class="spread-val">${(displaySell && displayBuy) ? fmt(displaySell - displayBuy, 2) : '—'}</td>
           </tr>`;
       }).join('');
+    }
+
+    // تحديث البطاقات
+    if (silverPrices[999] > 0) {
+      $('s-pound').textContent = fmt(silverPrices[999] * 8, 0) + ' ج';
+      $('s-oz').textContent = fmt(silverPrices[999] * 31.1035, 0) + ' ج';
+      $('s-kg').textContent = fmt(silverPrices[999] * 1000, 0) + ' ج';
+      $('s-screen').textContent = d.ounceUsd ? ('$' + fmt(d.ounceUsd, 2)) : '—';
     }
 
     $('err-silver').style.display = 'none';
