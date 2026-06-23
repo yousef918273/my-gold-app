@@ -202,10 +202,11 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 .daily-card .dval{font-size:0.95rem;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .daily-card .dchange{font-size:0.65rem;font-family:'IBM Plex Mono',monospace;margin-top:3px;font-weight:600;}
 
-/* ===== Mini Chart ===== */
+/* ===== Chart - محسّن ===== */
 .chart-wrap{margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px;}
-.chart-wrap h3{font-size:0.8rem;color:var(--gold);margin-bottom:10px;}
-#mini-chart{width:100%;height:120px;}
+.chart-wrap h3{font-size:0.8rem;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.chart-wrap h3::before{content:'📉';}
+#mini-chart{width:100%;height:140px;}
 
 /* ===== PWA Install Button ===== */
 #pwa-install-btn{position:fixed;bottom:90px;right:16px;background:var(--gold);color:#000;border:none;border-radius:50%;width:48px;height:48px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 12px rgba(201,168,76,0.3);z-index:998;transition:transform 0.2s;}
@@ -224,16 +225,14 @@ header{display:flex;align-items:center;justify-content:space-between;padding:10p
 .toast.error{border-color:var(--red);color:var(--red);}
 .toast.info{border-color:var(--blue);color:var(--blue);}
 
-/* ===== Long-term Chart ===== */
-.long-chart-wrap{margin-bottom:18px;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:15px;}
-.long-chart-wrap h3{font-size:0.8rem;color:var(--gold);margin-bottom:10px;}
-#long-chart{width:100%;height:160px;}
-
 /* ===== Analytics Card ===== */
 .analytics-card{background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px;}
 .analytics-card .an-title{font-size:0.7rem;color:var(--muted);margin-bottom:4px;}
 .analytics-card .an-val{font-size:1rem;font-weight:700;font-family:'IBM Plex Mono',monospace;}
 .analytics-card .an-val.profit{color:var(--green);}.analytics-card .an-val.loss{color:var(--red);}
+
+/* ===== Chart Date Labels ===== */
+.chart-dates{display:flex;justify-content:space-between;font-size:0.6rem;color:var(--muted);margin-top:6px;padding:0 5px;font-family:'IBM Plex Mono',monospace;}
 
 footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;border-top:1px solid var(--border);line-height:1.6;}
 
@@ -279,7 +278,7 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
 <div class="panel active" id="p0">
   <div class="error-box" id="err-gold">⚠️ تعذّر تحميل أسعار الذهب.</div>
 
-  <!-- Daily Change -->
+  <!-- تغير اليوم -->
   <div class="daily-change">
     <div class="daily-card">
       <div class="dlbl">تغير اليوم — عيار 21</div>
@@ -293,18 +292,7 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     </div>
   </div>
 
-  <!-- Mini Chart -->
-  <div class="chart-wrap">
-    <h3>📉 تحركات السعر (7 أيام)</h3>
-    <canvas id="mini-chart"></canvas>
-  </div>
-
-  <!-- Long-term Chart -->
-  <div class="long-chart-wrap">
-    <h3>📊 تحليل طويل المدى (30 يوم)</h3>
-    <canvas id="long-chart"></canvas>
-  </div>
-
+  <!-- أسعار الذهب -->
   <div class="sec g">🥇 أسعار الذهب — جنيه / جرام</div>
   <table class="price-table">
     <thead><tr><th style="text-align:right;padding-right:12px">العيار</th><th>شراء (تشتري منك)</th><th>بيع (تبيعلك)</th><th>الفرق</th></tr></thead>
@@ -316,6 +304,7 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     </tbody>
   </table>
 
+  <!-- أسعار إضافية -->
   <div class="sec g">📦 أسعار إضافية</div>
   <div class="info-grid">
     <div class="info-card"><div class="lbl">الجنيه الذهب</div><div class="val" id="g-pound">—</div><div class="change" id="g-pound-change"></div></div>
@@ -324,6 +313,14 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     <div class="info-card"><div class="lbl">سعر الأونصة (دولار عالمي)</div><div class="val" id="g-screen">—</div></div>
   </div>
 
+  <!-- الرسم البياني - تحت -->
+  <div class="chart-wrap">
+    <h3>تحركات السعر (7 أيام)</h3>
+    <canvas id="mini-chart"></canvas>
+    <div class="chart-dates" id="chart-dates"></div>
+  </div>
+
+  <!-- تحليل السوق -->
   <div class="sec g">📊 تشتري ولا تبيع؟</div>
   <div class="sentiment-wrap">
     <div class="sentiment-labels"><span>🟢 شراء</span><span>🔴 بيع</span></div>
@@ -494,7 +491,7 @@ footer{text-align:center;font-size:0.62rem;color:var(--muted);padding:14px;borde
     </div>
   </div>
   
-  <!-- NEW: Investment Analytics -->
+  <!-- Investment Analytics -->
   <div class="sec inv" id="analytics-sec" style="display:none">📈 تحليلات استثمارية</div>
   <div class="box" id="analytics-box" style="display:none">
     <div class="analytics-card">
@@ -598,7 +595,6 @@ let prevRates={};
 let sentimentVotes={buy:60,sell:40};
 let userVoted=false;
 let priceHistory=[];
-let longTermHistory=[]; // NEW: 30 يوم للتحليل الطويل
 let lastRates={};
 let currentUserId=null;
 let portfolio=[];
@@ -607,6 +603,7 @@ let adsLoaded=false;
 let pwaDeferredPrompt=null;
 let dailyPrices={gold21:0,gold24:0,silver925:0,silver999:0};
 let supabaseClient=null;
+let chartDates=[]; // تواريخ الرسم البياني
 
 // ====== Supabase Helpers ======
 function getSupabase(){ if(supabaseClient) return supabaseClient; if(window.supabase) supabaseClient=window.supabase; return supabaseClient; }
@@ -647,6 +644,56 @@ async function shareApp(){
   else{await navigator.clipboard.writeText(window.location.href);showToast('📋 تم نسخ الرابط!','success');}
 }
 
+// ====== Price History Persistence (localStorage) ======
+const HISTORY_KEY = 'sor_price_history_v2';
+const HISTORY_DATES_KEY = 'sor_price_dates_v2';
+
+function savePriceHistory() {
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(priceHistory));
+  localStorage.setItem(HISTORY_DATES_KEY, JSON.stringify(chartDates));
+}
+
+function loadPriceHistory() {
+  try {
+    const saved = localStorage.getItem(HISTORY_KEY);
+    const savedDates = localStorage.getItem(HISTORY_DATES_KEY);
+    if (saved) {
+      priceHistory = JSON.parse(saved);
+      // تأكد إن المصفوفة مش فاضية وكل القيم أرقام صحيحة
+      priceHistory = priceHistory.filter(p => typeof p === 'number' && !isNaN(p) && p > 0);
+    }
+    if (savedDates) {
+      chartDates = JSON.parse(savedDates);
+    }
+    // لو مفيش بيانات محفوظة، ابتدي بمصفوفة فاضية
+    if (!Array.isArray(priceHistory)) priceHistory = [];
+    if (!Array.isArray(chartDates)) chartDates = [];
+  } catch (e) {
+    priceHistory = [];
+    chartDates = [];
+  }
+}
+
+function addPriceToHistory(price) {
+  if (!price || price <= 0) return;
+  
+  const today = new Date().toISOString().split('T')[0];
+  
+  // لو النهاردة متسجلش قبل كده
+  if (chartDates.length === 0 || chartDates[chartDates.length - 1] !== today) {
+    priceHistory.push(price);
+    chartDates.push(today);
+    
+    // احتفظ بآخر 7 أيام بس
+    if (priceHistory.length > 7) {
+      priceHistory.shift();
+      chartDates.shift();
+    }
+    
+    savePriceHistory();
+  }
+}
+
 // ====== Daily Change Tracking ======
 function saveDailyPrices(){
   const today=new Date().toDateString();
@@ -684,10 +731,26 @@ function updateDailyChanges(){
   $('silver999-daily-change').textContent=s999.val; $('silver999-daily-change').className='dchange '+s999.cls;
 }
 
-// ====== Mini Chart (Canvas) ======
+// ====== Mini Chart (Canvas) - محسّن ======
 function drawMiniChart(){
   const canvas=$('mini-chart');
-  if(!canvas||priceHistory.length<2) return;
+  if(!canvas) return;
+  
+  // لو مفيش بيانات كفاية، ارسم placeholder
+  if(priceHistory.length<2){
+    const ctx=canvas.getContext('2d');
+    const dpr=window.devicePixelRatio||1;
+    const rect=canvas.getBoundingClientRect();
+    canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
+    ctx.scale(dpr,dpr);
+    ctx.clearRect(0,0,rect.width,rect.height);
+    ctx.fillStyle='#777';
+    ctx.font='12px Cairo';
+    ctx.textAlign='center';
+    ctx.fillText('جار جمع البيانات...', rect.width/2, rect.height/2);
+    return;
+  }
+  
   const ctx=canvas.getContext('2d');
   const dpr=window.devicePixelRatio||1;
   const rect=canvas.getBoundingClientRect();
@@ -699,12 +762,15 @@ function drawMiniChart(){
   const range=max-min||1;
 
   ctx.clearRect(0,0,w,h);
+  
   // Grid
   ctx.strokeStyle='#2a2a2a';ctx.lineWidth=0.5;
   for(let i=0;i<5;i++){const y=pad+(h-2*pad)*(i/4);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}
+  
   // Line
-  ctx.strokeStyle=priceHistory[priceHistory.length-1]>=priceHistory[0]?varToHex('--green'):varToHex('--red');
-  ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
+  const isUp=priceHistory[priceHistory.length-1]>=priceHistory[0];
+  ctx.strokeStyle=isUp?'#3DD68C':'#F05454';
+  ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
   ctx.beginPath();
   priceHistory.forEach((p,i)=>{
     const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
@@ -712,173 +778,44 @@ function drawMiniChart(){
     if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
   });
   ctx.stroke();
+  
   // Fill
   ctx.lineTo(w-pad,h-pad);ctx.lineTo(pad,h-pad);ctx.closePath();
   const grad=ctx.createLinearGradient(0,pad,0,h-pad);
-  grad.addColorStop(0,priceHistory[priceHistory.length-1]>=priceHistory[0]?'rgba(61,214,140,0.2)':'rgba(240,84,84,0.2)');
+  grad.addColorStop(0,isUp?'rgba(61,214,140,0.2)':'rgba(240,84,84,0.2)');
   grad.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=grad;ctx.fill();
+  
   // Points
   priceHistory.forEach((p,i)=>{
     const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
     const y=pad+(h-2*pad)*(1-(p-min)/range);
-    ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle=varToHex('--gold');ctx.fill();
-  });
-}
-
-// ====== Long-term Chart (30 days) ======
-function drawLongTermChart(){
-  const canvas=$('long-chart');
-  if(!canvas||longTermHistory.length<2) return;
-  const ctx=canvas.getContext('2d');
-  const dpr=window.devicePixelRatio||1;
-  const rect=canvas.getBoundingClientRect();
-  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
-  ctx.scale(dpr,dpr);
-  const w=rect.width,h=rect.height;
-  const pad=15;
-  const min=Math.min(...longTermHistory),max=Math.max(...longTermHistory);
-  const range=max-min||1;
-
-  ctx.clearRect(0,0,w,h);
-  
-  // Grid lines
-  ctx.strokeStyle='#2a2a2a';ctx.lineWidth=0.5;
-  for(let i=0;i<6;i++){
-    const y=pad+(h-2*pad)*(i/5);
-    ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();
-  }
-  
-  // Line
-  const isUp=longTermHistory[longTermHistory.length-1]>=longTermHistory[0];
-  ctx.strokeStyle=isUp?varToHex('--green'):varToHex('--red');
-  ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
-  ctx.beginPath();
-  longTermHistory.forEach((p,i)=>{
-    const x=pad+(w-2*pad)*(i/(longTermHistory.length-1));
-    const y=pad+(h-2*pad)*(1-(p-min)/range);
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  
-  // Fill
-  ctx.lineTo(w-pad,h-pad);ctx.lineTo(pad,h-pad);ctx.closePath();
-  const grad=ctx.createLinearGradient(0,pad,0,h-pad);
-  grad.addColorStop(0,isUp?'rgba(61,214,140,0.15)':'rgba(240,84,84,0.15)');
-  grad.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=grad;ctx.fill();
-  
-  // Labels (every 5 days)
-  ctx.fillStyle=varToHex('--muted');ctx.font='10px "IBM Plex Mono"';ctx.textAlign='center';
-  const step=Math.ceil(longTermHistory.length/5);
-  longTermHistory.forEach((p,i)=>{
-    if(i%step===0){
-      const x=pad+(w-2*pad)*(i/(longTermHistory.length-1));
-      const y=pad+(h-2*pad)*(1-(p-min)/range);
-      ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle=varToHex('--gold');ctx.fill();
-      ctx.fillStyle=varToHex('--muted');
-      ctx.fillText(fmt(p,0),x,h-2);
-    }
-  });
-}
-
-function varToHex(v){const m={'--green':'#3DD68C','--red':'#F05454','--gold':'#C9A84C','--muted':'#777'};return m[v]||v;}
-
-// ====== Supabase Price History (DB) ======
-async function loadHistoryFromDB() {
-  try {
-    const sb = getSupabase();
-    if (!sb) return;
-    
-    const { data, error } = await sb
-      .from('price_history')
-      .select('price, date')
-      .eq('item_name', 'gold_24')
-      .order('date', { ascending: true })
-      .limit(30);
-
-    if (error) {
-      console.error('خطأ في تحميل التاريخ من الداتابيز:', error.message);
-      return;
-    }
-
-    if (data && data.length > 0) {
-      // دمج مع البيانات المحلية لو موجودة
-      const dbPrices = data.map(row => row.price);
-      if (priceHistory.length === 0) {
-        priceHistory = dbPrices.slice(-7); // آخر 7 للـ mini chart
-      }
-      longTermHistory = dbPrices; // 30 يوم للـ long chart
-      drawMiniChart();
-      drawLongTermChart();
-    }
-  } catch (e) {
-    console.error('خطأ عام في loadHistoryFromDB:', e.message);
-  }
-}
-
-async function savePriceToDB() {
-  const sb = getSupabase();
-  if (!sb) return;
-  
-  const today = new Date().toISOString().split('T')[0];
-  const g24 = goldPrices[24];
-  if (!g24) return;
-  
-  try {
-    const { error } = await sb
-      .from('price_history')
-      .upsert(
-        { item_name: 'gold_24', price: g24, date: today },
-        { onConflict: 'item_name,date' }
-      );
-      
-    if (error) console.error('خطأ في حفظ السعر:', error.message);
-  } catch (e) {
-    console.error('خطأ في الحفظ:', e.message);
-  }
-}
-
-// ====== Investment Analytics ======
-function updateInvestmentAnalytics() {
-  if (!portfolio.length) {
-    $('analytics-sec').style.display = 'none';
-    $('analytics-box').style.display = 'none';
-    return;
-  }
-  
-  $('analytics-sec').style.display = 'block';
-  $('analytics-box').style.display = 'block';
-  
-  const totalGrams = portfolio.reduce((s,p) => s + p.grams, 0);
-  const totalCost = portfolio.reduce((s,p) => s + p.grams * p.buyPrice, 0);
-  const avgCost = totalCost / totalGrams;
-  
-  const currentVal = portfolio.reduce((s,p) => {
-    const price = goldPrices[p.karat] || goldPrices[21] || 0;
-    return s + p.grams * price;
-  }, 0);
-  
-  const profit = currentVal - totalCost;
-  const roi = totalCost > 0 ? ((profit / totalCost) * 100).toFixed(2) : 0;
-  
-  // Best/Worst buy
-  let bestBuy = null, worstBuy = null;
-  portfolio.forEach(p => {
-    const currentPrice = goldPrices[p.karat] || goldPrices[21] || 0;
-    const pnl = currentPrice - p.buyPrice;
-    if (!bestBuy || pnl > (goldPrices[bestBuy.karat] - bestBuy.buyPrice)) bestBuy = p;
-    if (!worstBuy || pnl < (goldPrices[worstBuy.karat] - worstBuy.buyPrice)) worstBuy = p;
+    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#C9A84C';ctx.fill();
+    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fillStyle='#0D0D0D';ctx.fill();
   });
   
-  $('an-total-invested').textContent = fmt(totalCost, 0) + ' ج';
-  $('an-current-value').textContent = fmt(currentVal, 0) + ' ج';
-  $('an-profit-loss').textContent = (profit >= 0 ? '+' : '') + fmt(profit, 0) + ' ج';
-  $('an-profit-loss').className = 'an-val ' + (profit >= 0 ? 'profit' : 'loss');
-  $('an-roi').textContent = (roi >= 0 ? '+' : '') + roi + '%';
-  $('an-roi').className = 'an-val ' + (roi >= 0 ? 'profit' : 'loss');
-  $('an-best-buy').textContent = bestBuy ? `${fmt(bestBuy.grams,1)}جم عيار${bestBuy.karat} @ ${fmt(bestBuy.buyPrice,0)}ج` : '—';
-  $('an-worst-buy').textContent = worstBuy ? `${fmt(worstBuy.grams,1)}جم عيار${worstBuy.karat} @ ${fmt(worstBuy.buyPrice,0)}ج` : '—';
+  // Update date labels
+  updateChartDates();
+}
+
+function updateChartDates() {
+  const container = $('chart-dates');
+  if (!container || chartDates.length < 2) return;
+  
+  // اعرض أول وآخر تاريخ بس
+  const firstDate = chartDates[0];
+  const lastDate = chartDates[chartDates.length - 1];
+  
+  const formatDate = (d) => {
+    const parts = d.split('-');
+    return `${parts[2]}/${parts[1]}`;
+  };
+  
+  container.innerHTML = `
+    <span>${formatDate(firstDate)}</span>
+    <span>${chartDates.length} أيام</span>
+    <span>${formatDate(lastDate)}</span>
+  `;
 }
 
 // ====== مساعدات ======
@@ -938,14 +875,11 @@ async function loadGold(){
     $('g-screen').textContent=d.ounceUsd?('$'+fmt(d.ounceUsd,0)):'—';
     $('err-gold').style.display='none';
     
-    // Update price history
-    priceHistory.push(g24);
-    if(priceHistory.length>7) priceHistory.shift();
-    longTermHistory.push(g24);
-    if(longTermHistory.length>30) longTermHistory.shift();
+    // أضف السعر للتاريخ (مع التحقق من التكرار)
+    addPriceToHistory(g24);
     
     calcSentiment(); calcGold(); calcInvestment(); calcManualMfg(); updatePortfolio(); calcZakat(); checkAlerts('gold');
-    updateDailyChanges(); drawMiniChart(); drawLongTermChart(); saveDailyPrices(); savePriceToDB();
+    updateDailyChanges(); drawMiniChart(); saveDailyPrices();
   }catch(e){console.error('Gold load error:',e.message); $('err-gold').style.display='block';}
 }
 
@@ -1123,6 +1057,48 @@ function updatePortfolio(){
   updateInvestmentAnalytics();
 }
 
+// ====== Investment Analytics ======
+function updateInvestmentAnalytics() {
+  if (!portfolio.length) {
+    $('analytics-sec').style.display = 'none';
+    $('analytics-box').style.display = 'none';
+    return;
+  }
+  
+  $('analytics-sec').style.display = 'block';
+  $('analytics-box').style.display = 'block';
+  
+  const totalGrams = portfolio.reduce((s,p) => s + p.grams, 0);
+  const totalCost = portfolio.reduce((s,p) => s + p.grams * p.buyPrice, 0);
+  const avgCost = totalCost / totalGrams;
+  
+  const currentVal = portfolio.reduce((s,p) => {
+    const price = goldPrices[p.karat] || goldPrices[21] || 0;
+    return s + p.grams * price;
+  }, 0);
+  
+  const profit = currentVal - totalCost;
+  const roi = totalCost > 0 ? ((profit / totalCost) * 100).toFixed(2) : 0;
+  
+  // Best/Worst buy
+  let bestBuy = null, worstBuy = null;
+  portfolio.forEach(p => {
+    const currentPrice = goldPrices[p.karat] || goldPrices[21] || 0;
+    const pnl = currentPrice - p.buyPrice;
+    if (!bestBuy || pnl > (goldPrices[bestBuy.karat] - bestBuy.buyPrice)) bestBuy = p;
+    if (!worstBuy || pnl < (goldPrices[worstBuy.karat] - worstBuy.buyPrice)) worstBuy = p;
+  });
+  
+  $('an-total-invested').textContent = fmt(totalCost, 0) + ' ج';
+  $('an-current-value').textContent = fmt(currentVal, 0) + ' ج';
+  $('an-profit-loss').textContent = (profit >= 0 ? '+' : '') + fmt(profit, 0) + ' ج';
+  $('an-profit-loss').className = 'an-val ' + (profit >= 0 ? 'profit' : 'loss');
+  $('an-roi').textContent = (roi >= 0 ? '+' : '') + roi + '%';
+  $('an-roi').className = 'an-val ' + (roi >= 0 ? 'profit' : 'loss');
+  $('an-best-buy').textContent = bestBuy ? `${fmt(bestBuy.grams,1)}جم عيار${bestBuy.karat} @ ${fmt(bestBuy.buyPrice,0)}ج` : '—';
+  $('an-worst-buy').textContent = worstBuy ? `${fmt(worstBuy.grams,1)}جم عيار${worstBuy.karat} @ ${fmt(worstBuy.buyPrice,0)}ج` : '—';
+}
+
 // ====== Sentiment with LocalStorage ======
 function loadSentimentVotes(){
   const saved=localStorage.getItem('sor_sentiment_votes');
@@ -1247,12 +1223,16 @@ if('serviceWorker' in navigator){
 
 // ====== Init ======
 if($('footer-year')) $('footer-year').textContent=new Date().getFullYear();
+
+// حمّل التاريخ المحفوظ الأول
+loadPriceHistory();
+
 loadSentimentVotes();
 renderAlerts();
 loadAll();
 setInterval(loadAll,5*60*1000);
 window.addEventListener('load',()=>{ setTimeout(initAds,2000); });
-window.addEventListener('resize',()=>{ drawMiniChart(); drawLongTermChart(); });
+window.addEventListener('resize',()=>{ drawMiniChart(); });
 </script>
 
 <!-- Supabase Auth Module -->
