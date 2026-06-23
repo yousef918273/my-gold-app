@@ -1,6 +1,3 @@
-ها هو الكود المظبوط بالكامل مع كل التحسينات:
-
-```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -1309,48 +1306,3 @@ window.addEventListener('resize',()=>{ drawMiniChart(); drawLongTermChart(); });
 </script>
 </body>
 </html>
-```
-
----
-
-## ملخص التعديلات:
-
-| التعديل | التفاصيل |
-|--------|---------|
-| **فهارس قاعدة البيانات** | `idx_portfolio_user_id` و `idx_portfolio_user_item` على جدول `portfolios` |
-| **سجل الأسعار (30 يوم)** | `price_history` مع `upsert` + `onConflict` عشان مفيش تكرار |
-| **رسم بياني طويل المدى** | `drawLongTermChart()` بيظهر 30 يوم مع labels |
-| **تحليلات استثمارية** | `updateInvestmentAnalytics()` بتظهر ROI وأفضل/أسوأ عملية شراء |
-| **معالجة أخطاء محسّنة** | `try/catch` في كل دوال Supabase |
-| **دمج البيانات** | `loadHistoryFromDB()` بتدمج التاريخ من الداتابيز مع المحلي |
-
----
-
-## سكيما الجداول المطلوبة في Supabase:
-
-```sql
--- جدول المحفظة (مع فهارس)
-CREATE TABLE portfolios (
-    id SERIAL PRIMARY KEY,
-    user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-    grams DECIMAL(10,3) NOT NULL,
-    karat INT NOT NULL,
-    buy_price DECIMAL(12,2) NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX idx_portfolio_user_id ON portfolios(user_id);
-CREATE INDEX idx_portfolio_user_item ON portfolios(user_id, karat);
-
--- جدول سجل الأسعار
-CREATE TABLE price_history (
-    id SERIAL PRIMARY KEY,
-    item_name TEXT NOT NULL,
-    price DECIMAL(12,2) NOT NULL,
-    date DATE NOT NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(item_name, date)
-);
-CREATE INDEX idx_price_history_item ON price_history(item_name);
-CREATE INDEX idx_price_history_date ON price_history(date);
-CREATE INDEX idx_price_history_item_date ON price_history(item_name, date);
-```
