@@ -1,24 +1,26 @@
 {
-  "name": "sor-alnaharda",
-  "version": "1.0.0",
-  "description": "أسعار الذهب والعملات في مصر",
-  "main": "index.html",
-  "scripts": {
-    "build": "echo 'No build step needed'",
-    "sync": "npx cap sync",
-    "android": "npx cap open android",
-    "ios": "npx cap open ios",
-    "serve": "npx serve ."
+  "appId": "com.youssefmosaad.soralnaharda",
+  "appName": "سعر النهارده",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https",
+    "iosScheme": "https"
   },
-  "dependencies": {
-    "@capacitor/android": "^6.0.0",
-    "@capacitor/core": "^6.0.0",
-    "@capacitor/ios": "^6.0.0",
-    "@capacitor/splash-screen": "^6.0.0",
-    "@capacitor/status-bar": "^6.0.0",
-    "@capacitor/push-notifications": "^6.0.0"
-  },
-  "devDependencies": {
-    "@capacitor/cli": "^6.0.0"
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#0D0D0D",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#0D0D0D"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
   }
 }
