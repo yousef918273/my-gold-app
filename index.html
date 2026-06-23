@@ -667,12 +667,7 @@ async function loadSilver() {
 
         // نحدد من هو الأكبر (سعر البيع) ومن هو الأصغر (سعر الشراء)
         let prices = [val1, val2, val3].filter(p => !isNaN(p) && p > 0);
-       // البحث عن الشراء، وإذا كان السعر أقل من 50 جنيه (غير منطقي للفضة)، احسبه بنفسك
-let buy = parseFloat(d['buy_' + row.v] || d[row.v + '_buy'] || d['purchase_' + row.v]);
-
-if (!buy || buy < 50) { 
-    buy = sell * 0.92; // هامش ربح 8% إذا كان السعر القادم من السيرفر غير منطقي
-}
+        let buy = Math.min(...prices);
         let sell = Math.max(...prices);
         
         // إذا كان لدينا رقم واحد فقط، نعتبره سعر البيع ونحسب الشراء
