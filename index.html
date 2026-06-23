@@ -649,56 +649,43 @@ async function loadSilver() {
   try {
     const response = await fetch(`${SCRAPER_BASE}/api/silver`);
     const d = await response.json();
-    console.log("Silver Data from Server:", d);
-
-    if (!d || Object.keys(d).length === 0) throw new Error('لا توجد بيانات فضة');
+    console.log("Silver Data Full Structure:", d);
 
     const rows = [
       { k: 'عيار 999', v: '999' },
       { k: 'عيار 925', v: '925' },
       { k: 'عيار 800', v: '800' }
     ];
-
+    
     const tbody = $('silver-tbody');
     if (tbody) {
       tbody.innerHTML = rows.map(row => {
-        // نأخذ سعر البيع الأساسي من السيرفر (أكبر قيمة هي الأصح دائماً)
-        let sell = parseFloat(d[row.v] || d[row.v + '_sell']);
+        // محاولة البحث عن الأسعار بجميع الصيغ الممكنة
+        const val1 = parseFloat(d[row.v]);
+        const val2 = parseFloat(d[row.v + '_sell'] || d['sell_' + row.v]);
+        const val3 = parseFloat(d[row.v + '_buy'] || d['buy_' + row.v]);
+
+        // نحدد من هو الأكبر (سعر البيع) ومن هو الأصغر (سعر الشراء)
+        let prices = [val1, val2, val3].filter(p => !isNaN(p) && p > 0);
+        let buy = Math.min(...prices);
+        let sell = Math.max(...prices);
         
-        // استخراج سعر الشراء بأي صيغة ممكنة (buy, purchase, إلخ)
-        let buy = parseFloat(d['buy_' + row.v] || d[row.v + '_buy'] || d['purchase_' + row.v]);
-
-        // "مصفاة الأمان": إذا كان سعر الشراء غير موجود أو غير منطقي (أقل من 50)
-        // نقوم بحسابه كنسبة 92% من سعر البيع لضمان ظهور رقم منطقي
-        if (!buy || buy < 50) {
-            buy = sell * 0.92;
-        }
-
-        // حساب الفرق
-        const spread = sell - buy;
+        // إذا كان لدينا رقم واحد فقط، نعتبره سعر البيع ونحسب الشراء
+        if(prices.length === 1) { sell = prices[0]; buy = sell * 0.95; }
 
         return `
           <tr>
             <td class="karat-label">${row.k}</td>
             <td class="buy-price">${buy ? fmt(buy, 2) : '—'}</td>
             <td class="sell-price">${sell ? fmt(sell, 2) : '—'}</td>
-            <td class="spread-val">${spread ? fmt(spread, 2) : '—'}</td>
+            <td class="spread-val">${(sell && buy) ? fmt(sell - buy, 2) : '—'}</td>
           </tr>`;
       }).join('');
     }
-
-    // تحديث بطاقات المعلومات الإضافية
-    const s999 = parseFloat(d['999'] || d['999_sell']) || 0;
-    if (s999 > 0) {
-      $('s-pound').textContent = fmt(s999 * 8, 0) + ' ج';
-      $('s-oz').textContent = fmt(s999 * 31.1035, 0) + ' ج';
-      $('s-kg').textContent = fmt(s999 * 1000, 0) + ' ج';
-      $('s-screen').textContent = d.ounceUsd ? ('$' + fmt(d.ounceUsd, 2)) : '—';
-    }
-
+    
     $('err-silver').style.display = 'none';
   } catch (e) {
-    console.error('Silver error:', e);
+    console.error(e);
     $('err-silver').style.display = 'block';
   }
 }
