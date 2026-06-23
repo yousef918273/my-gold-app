@@ -649,63 +649,43 @@ async function loadSilver() {
   try {
     const response = await fetch(`${SCRAPER_BASE}/api/silver`);
     const d = await response.json();
-    console.log("Silver Data:", d);
-
-    if (!d || Object.keys(d).length === 0) throw new Error('لا توجد بيانات فضة');
-
-    // تحديث الأسعار بمرونة: إذا كان السيرفر يرسل قيم null، نضع 0
-    silverPrices = {
-      999: parseFloat(d['999']) || 0,
-      925: parseFloat(d['925']) || 0,
-      800: parseFloat(d['800']) || 0
-    };
+    console.log("Silver Data Full Structure:", d);
 
     const rows = [
-      { k: 'عيار 999', v: 999, hl: false },
-      { k: 'عيار 925', v: 925, hl: true },
-      { k: 'عيار 800', v: 800, hl: false }
+      { k: 'عيار 999', v: '999' },
+      { k: 'عيار 925', v: '925' },
+      { k: 'عيار 800', v: '800' }
     ];
-
+    
     const tbody = $('silver-tbody');
     if (tbody) {
       tbody.innerHTML = rows.map(row => {
-        const buy = silverPrices[row.v];
-        // نأخذ سعر البيع من السيرفر أو نحسبه إذا كان غير موجود
-        let sell = parseFloat(d[row.v + '_sell']) || (buy ? buy * 1.015 : 0);
+        // محاولة البحث عن الأسعار بجميع الصيغ الممكنة
+        const val1 = parseFloat(d[row.v]);
+        const val2 = parseFloat(d[row.v + '_sell'] || d['sell_' + row.v]);
+        const val3 = parseFloat(d[row.v + '_buy'] || d['buy_' + row.v]);
+
+        // نحدد من هو الأكبر (سعر البيع) ومن هو الأصغر (سعر الشراء)
+        let prices = [val1, val2, val3].filter(p => !isNaN(p) && p > 0);
+        let buy = Math.min(...prices);
+        let sell = Math.max(...prices);
         
-        // --- تصحيح ذكي ---
-        // إذا كان سعر البيع (sell) أقل من سعر الشراء (buy)، قم بتبديلهما تلقائياً
-        let displayBuy = buy;
-        let displaySell = sell;
-        if (displaySell < displayBuy) {
-            displayBuy = sell;
-            displaySell = buy;
-        }
+        // إذا كان لدينا رقم واحد فقط، نعتبره سعر البيع ونحسب الشراء
+        if(prices.length === 1) { sell = prices[0]; buy = sell * 0.95; }
 
         return `
-          <tr class="${row.hl ? 'hl-row-s' : ''}">
+          <tr>
             <td class="karat-label">${row.k}</td>
-            <td class="buy-price">${displayBuy ? fmt(displayBuy, 2) : '—'}</td>
-            <td class="sell-price">${displaySell ? fmt(displaySell, 2) : '—'}</td>
-            <td class="spread-val">${(displaySell && displayBuy) ? fmt(displaySell - displayBuy, 2) : '—'}</td>
+            <td class="buy-price">${buy ? fmt(buy, 2) : '—'}</td>
+            <td class="sell-price">${sell ? fmt(sell, 2) : '—'}</td>
+            <td class="spread-val">${(sell && buy) ? fmt(sell - buy, 2) : '—'}</td>
           </tr>`;
       }).join('');
     }
-
-    // تحديث البطاقات
-    if (silverPrices[999] > 0) {
-      $('s-pound').textContent = fmt(silverPrices[999] * 8, 0) + ' ج';
-      $('s-oz').textContent = fmt(silverPrices[999] * 31.1035, 0) + ' ج';
-      $('s-kg').textContent = fmt(silverPrices[999] * 1000, 0) + ' ج';
-      $('s-screen').textContent = d.ounceUsd ? ('$' + fmt(d.ounceUsd, 2)) : '—';
-    }
-
+    
     $('err-silver').style.display = 'none';
-    calcSilver();
-    calcZakat();
-    checkAlerts('silver');
   } catch (e) {
-    console.error('Silver error:', e);
+    console.error(e);
     $('err-silver').style.display = 'block';
   }
 }
