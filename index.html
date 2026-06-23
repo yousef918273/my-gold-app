@@ -776,7 +776,13 @@ async function loadSilver(){
     calcSilver(); calcZakat(); checkAlerts('silver'); updateDailyChanges(); saveDailyPrices();
   }catch(e){console.error('Silver load error:',e.message); $('err-silver').style.display='block';}
 }
-
+async function savePriceToHistory(itemName, price) {
+  const { data, error } = await supabase
+    .from('price_history')
+    .insert([{ item_name: itemName, price: price }]);
+  
+  if (error) console.error('خطأ في حفظ السعر:', error);
+}
 async function loadCurrencies(){
   try{
     const r=await fetch('https://open.er-api.com/v6/latest/EGP');
