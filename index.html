@@ -650,12 +650,8 @@ async function loadSilver() {
     const response = await fetch(`${SCRAPER_BASE}/api/silver`);
     const d = await response.json();
 
-    // تأكد من أن البيانات وصلت بشكل سليم
-    console.log("Silver Data from Server:", d);
-
     if (!d || Object.keys(d).length === 0) throw new Error('لا توجد بيانات فضة');
 
-    // تحديث الأسعار الأساسية من السيرفر
     silverPrices = {
       999: d['999'] || 0,
       925: d['925'] || 0,
@@ -671,12 +667,23 @@ async function loadSilver() {
     const tbody = $('silver-tbody');
     if (tbody) {
       tbody.innerHTML = rows.map(row => {
-        const buy = silverPrices[row.v];
-        // المنطق: سعر البيع للناس عادة أكبر من سعر الشراء منهم
-        // نأخذ القيمة من السيرفر إذا وجدت، وإلا نحسب هامش بسيط
-        const sell = d[row.v + '_sell'] || (buy ? buy * 1.015 : null);
+        const valFromServer = silverPrices[row.v];
+        const sellFromServer = d[row.v + '_sell'];
 
-        // هنا الترتيب يطابق الـ <th>: العيار | شراء | بيع | الفرق
+        // المنطق الذكي: نقارن القيمتين، الصغيرة نضعها "شراء" والكبيرة "بيع"
+        let buy = valFromServer;
+        let sell = sellFromServer;
+
+        if (sell && buy && sell < buy) {
+            // إذا كان "سعر البيع" من السيرفر أصغر من "سعر الشراء"، قم بالتبديل
+            let temp = buy;
+            buy = sell;
+            sell = temp;
+        } else if (!sell && buy) {
+            // إذا لم يوجد سعر بيع، نحسبه بزيادة بسيطة
+            sell = buy * 1.015;
+        }
+
         return `
           <tr class="${row.hl ? 'hl-row-s' : ''}">
             <td class="karat-label">${row.k}</td>
@@ -685,14 +692,6 @@ async function loadSilver() {
             <td class="spread-val">${(sell && buy) ? fmt(sell - buy, 2) : '—'}</td>
           </tr>`;
       }).join('');
-    }
-
-    // تحديث البطاقات الإضافية في صفحة الفضة
-    if (silverPrices[999] > 0) {
-      $('s-pound').textContent = fmt(silverPrices[999] * 8, 0) + ' ج';
-      $('s-oz').textContent = fmt(silverPrices[999] * 31.1035, 0) + ' ج';
-      $('s-kg').textContent = fmt(silverPrices[999] * 1000, 0) + ' ج';
-      $('s-screen').textContent = d.ounceUsd ? ('$' + fmt(d.ounceUsd, 2)) : '—';
     }
 
     $('err-silver').style.display = 'none';
