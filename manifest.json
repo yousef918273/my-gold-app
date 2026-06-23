@@ -1,5 +1,5 @@
 {
-  "name": "سعر النهارده",
+  "name": "سعر النهارده | Sor Al-Naharda",
   "short_name": "سعر النهارده",
   "description": "أسعار الذهب والفضة والعملات في مصر لحظة بلحظة",
   "start_url": "/",
@@ -24,19 +24,37 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["finance", "utilities"],
+  "categories": ["finance", "utilities", "productivity"],
   "screenshots": [
     {
       "src": "screenshot-wide.png",
       "sizes": "1280x720",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Desktop View"
     },
     {
       "src": "screenshot-narrow.png",
       "sizes": "750x1334",
       "type": "image/png",
-      "form_factor": "narrow"
+      "form_factor": "narrow",
+      "label": "Mobile View"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "أسعار الذهب",
+      "short_name": "الذهب",
+      "description": "عرض أسعار الذهب",
+      "url": "/?tab=gold",
+      "icons": [{ "src": "favicon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "العملات",
+      "short_name": "العملات",
+      "description": "عرض أسعار العملات",
+      "url": "/?tab=currency",
+      "icons": [{ "src": "favicon.png", "sizes": "192x192" }]
     }
   ]
 }
