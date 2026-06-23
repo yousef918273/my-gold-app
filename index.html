@@ -659,13 +659,11 @@ function loadPriceHistory() {
     const savedDates = localStorage.getItem(HISTORY_DATES_KEY);
     if (saved) {
       priceHistory = JSON.parse(saved);
-      // تأكد إن المصفوفة مش فاضية وكل القيم أرقام صحيحة
       priceHistory = priceHistory.filter(p => typeof p === 'number' && !isNaN(p) && p > 0);
     }
     if (savedDates) {
       chartDates = JSON.parse(savedDates);
     }
-    // لو مفيش بيانات محفوظة، ابتدي بمصفوفة فاضية
     if (!Array.isArray(priceHistory)) priceHistory = [];
     if (!Array.isArray(chartDates)) chartDates = [];
   } catch (e) {
@@ -679,7 +677,7 @@ function addPriceToHistory(price) {
   
   const today = new Date().toISOString().split('T')[0];
   
-  // لو النهاردة متسجلش قبل كده
+  // لو النهاردة متسجلتش قبل كده
   if (chartDates.length === 0 || chartDates[chartDates.length - 1] !== today) {
     priceHistory.push(price);
     chartDates.push(today);
@@ -691,7 +689,179 @@ function addPriceToHistory(price) {
     }
     
     savePriceHistory();
+  } else {
+    // لو النهاردة متسجلة، حدّث السعر (لو تغيّر)
+    const lastIdx = priceHistory.length - 1;
+    if (priceHistory[lastIdx] !== price) {
+      priceHistory[lastIdx] = price;
+      savePriceHistory();
+    }
   }
+}
+
+// ====== Mini Chart (Canvas) - محسّن ======
+function drawMiniChart(){
+  const canvas=$('mini-chart');
+  if(!canvas) return;
+  
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const rect=canvas.getBoundingClientRect();
+  canvas.width=rect.width*dpr; 
+  canvas.height=rect.height*dpr;
+  ctx.scale(dpr,dpr);
+  const w=rect.width, h=rect.height;
+  const pad=12;
+
+  ctx.clearRect(0,0,w,h);
+  
+  // Background
+  ctx.fillStyle='#161616';
+  ctx.fillRect(0,0,w,h);
+  
+  // لو مفيش بيانات كفاية
+  if(priceHistory.length < 2){
+    // رسم placeholder محسّن
+    ctx.strokeStyle='#2a2a2a';
+    ctx.lineWidth=1;
+    ctx.setLineDash([5,5]);
+    
+    // خطوط دليلية
+    for(let i=1;i<4;i++){
+      const y=pad+(h-2*pad)*(i/4);
+      ctx.beginPath();
+      ctx.moveTo(pad,y);
+      ctx.lineTo(w-pad,y);
+      ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    
+    // نص
+    ctx.fillStyle='#777';
+    ctx.font='13px Cairo';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText('📊 جار جمع البيانات اليومية...', w/2, h/2 - 10);
+    ctx.font='11px "IBM Plex Mono"';
+    ctx.fillStyle='#555';
+    ctx.fillText('(سيتم عرض الرسم بعد يومين)', w/2, h/2 + 12);
+    
+    updateChartDates();
+    return;
+  }
+  
+  const min=Math.min(...priceHistory), max=Math.max(...priceHistory);
+  const range=max-min||1;
+  const isUp=priceHistory[priceHistory.length-1]>=priceHistory[0];
+
+  // Grid
+  ctx.strokeStyle='#2a2a2a';
+  ctx.lineWidth=0.5;
+  for(let i=0;i<5;i++){
+    const y=pad+(h-2*pad)*(i/4);
+    ctx.beginPath();
+    ctx.moveTo(pad,y);
+    ctx.lineTo(w-pad,y);
+    ctx.stroke();
+  }
+  
+  // Area fill (gradient)
+  const areaGrad=ctx.createLinearGradient(0,pad,0,h-pad);
+  areaGrad.addColorStop(0,isUp?'rgba(61,214,140,0.25)':'rgba(240,84,84,0.25)');
+  areaGrad.addColorStop(1,'rgba(0,0,0,0)');
+  
+  ctx.beginPath();
+  priceHistory.forEach((p,i)=>{
+    const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
+    const y=pad+(h-2*pad)*(1-(p-min)/range);
+    if(i===0) ctx.moveTo(x,y); 
+    else ctx.lineTo(x,y);
+  });
+  ctx.lineTo(w-pad,h-pad);
+  ctx.lineTo(pad,h-pad);
+  ctx.closePath();
+  ctx.fillStyle=areaGrad;
+  ctx.fill();
+  
+  // Line
+  ctx.strokeStyle=isUp?'#3DD68C':'#F05454';
+  ctx.lineWidth=2.5;
+  ctx.lineJoin='round';
+  ctx.lineCap='round';
+  ctx.beginPath();
+  priceHistory.forEach((p,i)=>{
+    const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
+    const y=pad+(h-2*pad)*(1-(p-min)/range);
+    if(i===0) ctx.moveTo(x,y); 
+    else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  
+  // Points
+  priceHistory.forEach((p,i)=>{
+    const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
+    const y=pad+(h-2*pad)*(1-(p-min)/range);
+    
+    // Outer glow
+    ctx.beginPath();
+    ctx.arc(x,y,6,0,Math.PI*2);
+    ctx.fillStyle=isUp?'rgba(61,214,140,0.3)':'rgba(240,84,84,0.3)';
+    ctx.fill();
+    
+    // Point
+    ctx.beginPath();
+    ctx.arc(x,y,4,0,Math.PI*2);
+    ctx.fillStyle='#C9A84C';
+    ctx.fill();
+    
+    // Inner
+    ctx.beginPath();
+    ctx.arc(x,y,2,0,Math.PI*2);
+    ctx.fillStyle='#0D0D0D';
+    ctx.fill();
+  });
+  
+  // Last price label
+  const lastPrice = priceHistory[priceHistory.length-1];
+  const lastX = w-pad;
+  const lastY = pad+(h-2*pad)*(1-(lastPrice-min)/range);
+  
+  ctx.fillStyle='#C9A84C';
+  ctx.font='bold 11px "IBM Plex Mono"';
+  ctx.textAlign='right';
+  ctx.fillText(fmt(lastPrice,0)+' ج', lastX, lastY - 10);
+  
+  updateChartDates();
+}
+
+function updateChartDates() {
+  const container = $('chart-dates');
+  if (!container) return;
+  
+  if (chartDates.length === 0) {
+    container.innerHTML = '<span>—</span>';
+    return;
+  }
+  
+  if (chartDates.length === 1) {
+    const parts = chartDates[0].split('-');
+    container.innerHTML = `<span>اليوم: ${parts[2]}/${parts[1]}</span><span>يوم 1/7</span>`;
+    return;
+  }
+  
+  const firstDate = chartDates[0];
+  const lastDate = chartDates[chartDates.length - 1];
+  
+  const formatDate = (d) => {
+    const parts = d.split('-');
+    return `${parts[2]}/${parts[1]}`;
+  };
+  
+  container.innerHTML = `
+    <span>${formatDate(firstDate)}</span>
+    <span style="color:var(--gold)">${chartDates.length} / 7 أيام</span>
+    <span>${formatDate(lastDate)}</span>
+  `;
 }
 
 // ====== Daily Change Tracking ======
@@ -729,93 +899,6 @@ function updateDailyChanges(){
   $('silver-daily-change').textContent=s925.val; $('silver-daily-change').className='dchange '+s925.cls;
   $('silver999-daily-val').textContent=silverPrices[999]?fmt(silverPrices[999],2)+' ج':'—';
   $('silver999-daily-change').textContent=s999.val; $('silver999-daily-change').className='dchange '+s999.cls;
-}
-
-// ====== Mini Chart (Canvas) - محسّن ======
-function drawMiniChart(){
-  const canvas=$('mini-chart');
-  if(!canvas) return;
-  
-  // لو مفيش بيانات كفاية، ارسم placeholder
-  if(priceHistory.length<2){
-    const ctx=canvas.getContext('2d');
-    const dpr=window.devicePixelRatio||1;
-    const rect=canvas.getBoundingClientRect();
-    canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
-    ctx.scale(dpr,dpr);
-    ctx.clearRect(0,0,rect.width,rect.height);
-    ctx.fillStyle='#777';
-    ctx.font='12px Cairo';
-    ctx.textAlign='center';
-    ctx.fillText('جار جمع البيانات...', rect.width/2, rect.height/2);
-    return;
-  }
-  
-  const ctx=canvas.getContext('2d');
-  const dpr=window.devicePixelRatio||1;
-  const rect=canvas.getBoundingClientRect();
-  canvas.width=rect.width*dpr; canvas.height=rect.height*dpr;
-  ctx.scale(dpr,dpr);
-  const w=rect.width,h=rect.height;
-  const pad=10;
-  const min=Math.min(...priceHistory),max=Math.max(...priceHistory);
-  const range=max-min||1;
-
-  ctx.clearRect(0,0,w,h);
-  
-  // Grid
-  ctx.strokeStyle='#2a2a2a';ctx.lineWidth=0.5;
-  for(let i=0;i<5;i++){const y=pad+(h-2*pad)*(i/4);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}
-  
-  // Line
-  const isUp=priceHistory[priceHistory.length-1]>=priceHistory[0];
-  ctx.strokeStyle=isUp?'#3DD68C':'#F05454';
-  ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
-  ctx.beginPath();
-  priceHistory.forEach((p,i)=>{
-    const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
-    const y=pad+(h-2*pad)*(1-(p-min)/range);
-    if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  
-  // Fill
-  ctx.lineTo(w-pad,h-pad);ctx.lineTo(pad,h-pad);ctx.closePath();
-  const grad=ctx.createLinearGradient(0,pad,0,h-pad);
-  grad.addColorStop(0,isUp?'rgba(61,214,140,0.2)':'rgba(240,84,84,0.2)');
-  grad.addColorStop(1,'rgba(0,0,0,0)');
-  ctx.fillStyle=grad;ctx.fill();
-  
-  // Points
-  priceHistory.forEach((p,i)=>{
-    const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
-    const y=pad+(h-2*pad)*(1-(p-min)/range);
-    ctx.beginPath();ctx.arc(x,y,4,0,Math.PI*2);ctx.fillStyle='#C9A84C';ctx.fill();
-    ctx.beginPath();ctx.arc(x,y,2,0,Math.PI*2);ctx.fillStyle='#0D0D0D';ctx.fill();
-  });
-  
-  // Update date labels
-  updateChartDates();
-}
-
-function updateChartDates() {
-  const container = $('chart-dates');
-  if (!container || chartDates.length < 2) return;
-  
-  // اعرض أول وآخر تاريخ بس
-  const firstDate = chartDates[0];
-  const lastDate = chartDates[chartDates.length - 1];
-  
-  const formatDate = (d) => {
-    const parts = d.split('-');
-    return `${parts[2]}/${parts[1]}`;
-  };
-  
-  container.innerHTML = `
-    <span>${formatDate(firstDate)}</span>
-    <span>${chartDates.length} أيام</span>
-    <span>${formatDate(lastDate)}</span>
-  `;
 }
 
 // ====== مساعدات ======
@@ -1224,7 +1307,7 @@ if('serviceWorker' in navigator){
 // ====== Init ======
 if($('footer-year')) $('footer-year').textContent=new Date().getFullYear();
 
-// حمّل التاريخ المحفوظ الأول
+// حمّل التاريخ المحفوظ الأول (ده أهم حاجة)
 loadPriceHistory();
 
 loadSentimentVotes();
