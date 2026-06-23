@@ -6,25 +6,29 @@
 <title>تسجيل الدخول | سعر النهارده</title>
 <meta name="description" content="تسجيل الدخول إلى سعر النهارده - أسعار الذهب والعملات في مصر">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --gold: #C9A84C;
-  --gold-lt: #E8D08A;
-  --dark: #0D0D0D;
-  --card: #161616;
-  --card2: #1C1C1C;
-  --border: #2A2A2A;
-  --text: #F0EDE6;
-  --muted: #777;
-  --green: #3DD68C;
-  --red: #F05454;
+  --gold: #b8860b;
+  --gold-light: #d4a843;
+  --gold-pale: #faf6ed;
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --text: #1a1a1a;
+  --text-secondary: #666666;
+  --muted: #999999;
+  --border: #ebe8e3;
+  --green: #2e7d32;
+  --red: #c62828;
+  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-hover: 0 4px 16px rgba(0,0,0,0.08);
+  --radius: 16px;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-  background: var(--dark);
+  background: var(--bg);
   color: var(--text);
   font-family: 'Cairo', sans-serif;
   min-height: 100vh;
@@ -35,18 +39,23 @@ body {
 }
 
 .card {
-  background: var(--card);
+  background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 16px;
+  border-radius: var(--radius);
   width: 100%;
   max-width: 420px;
-  padding: 36px 28px;
-  box-shadow: 0 12px 48px rgba(0,0,0,0.6);
+  padding: 40px 32px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-hover);
 }
 
 .brand {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .brand a {
@@ -54,10 +63,10 @@ body {
 }
 
 .brand .logo {
-  font-size: 1.5rem;
+  font-size: 1.6rem;
   font-weight: 900;
   color: var(--gold);
-  letter-spacing: 1px;
+  letter-spacing: -0.5px;
 }
 
 .brand .logo span {
@@ -65,60 +74,64 @@ body {
 }
 
 .brand .tagline {
-  font-size: 0.72rem;
+  font-size: 0.78rem;
   color: var(--muted);
-  margin-top: 6px;
-  font-weight: 400;
+  margin-top: 8px;
+  font-weight: 500;
 }
 
 .mode-title {
   text-align: center;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   color: var(--text);
 }
 
 .form-group {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
   display: block;
-  font-size: 0.78rem;
-  color: var(--muted);
-  margin-bottom: 5px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
   font-weight: 600;
 }
 
 .form-group input {
   width: 100%;
-  background: var(--dark);
-  border: 1px solid var(--border);
+  background: var(--bg);
+  border: 1.5px solid var(--border);
   color: var(--text);
-  padding: 11px 14px;
-  border-radius: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
   font-family: 'Cairo', sans-serif;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px rgba(201,168,76,0.12);
+  border-color: var(--gold-light);
+  box-shadow: 0 0 0 3px rgba(184,134,11,0.1);
+}
+
+.form-group input::placeholder {
+  color: var(--muted);
 }
 
 .btn {
   width: 100%;
   border: none;
-  padding: 12px;
-  border-radius: 10px;
+  padding: 13px;
+  border-radius: 12px;
   font-family: 'Cairo', sans-serif;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.15s;
   margin-top: 4px;
 }
 
@@ -128,25 +141,27 @@ body {
 
 .btn-gold {
   background: var(--gold);
-  color: #000;
+  color: #fff;
 }
 
 .btn-gold:hover {
-  background: var(--gold-lt);
+  background: #9a7009;
 }
 
 .btn-google {
-  background: #fff;
-  color: #444;
+  background: var(--surface);
+  color: var(--text);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 10px;
+  border: 1.5px solid var(--border);
   margin-top: 0;
 }
 
 .btn-google:hover {
-  background: #f0f0f0;
+  background: var(--gold-pale);
+  border-color: var(--gold-light);
 }
 
 .btn-google svg {
@@ -157,9 +172,10 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin: 18px 0;
+  margin: 20px 0;
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .divider::before,
@@ -172,9 +188,9 @@ body {
 
 .toggle {
   text-align: center;
-  margin-top: 16px;
-  font-size: 0.82rem;
-  color: var(--muted);
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
 .toggle a {
@@ -189,45 +205,47 @@ body {
 }
 
 .error {
-  background: #1a0a0a;
-  border: 1px solid #4a1a1a;
-  border-radius: 8px;
-  padding: 10px 12px;
+  background: #ffebee;
+  border: 1px solid #ffcdd2;
+  border-radius: 12px;
+  padding: 12px 14px;
   color: var(--red);
-  font-size: 0.8rem;
-  margin-bottom: 14px;
+  font-size: 0.82rem;
+  margin-bottom: 16px;
   display: none;
+  font-weight: 600;
 }
 
 .success {
-  background: #0d1a0d;
-  border: 1px solid #1a3a1a;
-  border-radius: 8px;
-  padding: 10px 12px;
+  background: #e8f5e9;
+  border: 1px solid #c8e6c9;
+  border-radius: 12px;
+  padding: 12px 14px;
   color: var(--green);
-  font-size: 0.8rem;
-  margin-bottom: 14px;
+  font-size: 0.82rem;
+  margin-bottom: 16px;
   display: none;
+  font-weight: 600;
 }
 
 .footer-note {
   text-align: center;
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: var(--muted);
-  margin-top: 20px;
-  line-height: 1.5;
+  margin-top: 24px;
+  line-height: 1.6;
 }
 
 .spinner {
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid rgba(0,0,0,0.3);
-  border-top-color: #000;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #fff;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   vertical-align: middle;
-  margin-left: 6px;
+  margin-right: 6px;
 }
 
 @keyframes spin {
@@ -240,14 +258,13 @@ body {
 
 @media (max-width: 480px) {
   .card {
-    padding: 28px 20px;
+    padding: 32px 24px;
   }
   .brand .logo {
-    font-size: 1.3rem;
+    font-size: 1.4rem;
   }
 }
 </style>
-<base target="_blank">
 </head>
 <body>
 
@@ -299,7 +316,7 @@ body {
   </button>
 
   <div class="footer-note">
-    بتسجيل الدخول، بتوافق على استخدام البيانات بما يتماشى مع سياسة الخصوصية.
+    بتسجيل الدخول، بتوافق على استخدام البيانات بما يتماشى مع <a href="privacy-policy.html" style="color:var(--gold);text-decoration:none;">سياسة الخصوصية</a>.
   </div>
 </div>
 
