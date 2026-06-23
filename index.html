@@ -645,50 +645,37 @@ $('err-gold').style.display='none'; // ✅ — لو وصلت للـ try بنجا
   }catch(e){console.error('Gold load error:',e.message);$('err-gold').style.display='block';}
 }
 
-async function loadSilver() {
-  try {
-    const response = await fetch(`${SCRAPER_BASE}/api/silver`);
-    const d = await response.json();
-    console.log("Silver Data Full Structure:", d);
+async function loadSilver(){
+  try{
+    const r=await fetch(`${SCRAPER_BASE}/api/silver`);
+    const d=await r.json();
 
-    const rows = [
-      { k: 'عيار 999', v: '999' },
-      { k: 'عيار 925', v: '925' },
-      { k: 'عيار 800', v: '800' }
-    ];
-    
-    const tbody = $('silver-tbody');
-    if (tbody) {
-      tbody.innerHTML = rows.map(row => {
-        // محاولة البحث عن الأسعار بجميع الصيغ الممكنة
-        const val1 = parseFloat(d[row.v]);
-        const val2 = parseFloat(d[row.v + '_sell'] || d['sell_' + row.v]);
-        const val3 = parseFloat(d[row.v + '_buy'] || d['buy_' + row.v]);
+    silverPrices={999:d[999],925:d[925],800:d[800]};
+    if(!silverPrices[999]) throw new Error('لا توجد بيانات فضة');
 
-        // نحدد من هو الأكبر (سعر البيع) ومن هو الأصغر (سعر الشراء)
-        let prices = [val1, val2, val3].filter(p => !isNaN(p) && p > 0);
-        let buy = Math.min(...prices);
-        let sell = Math.max(...prices);
-        
-        // إذا كان لدينا رقم واحد فقط، نعتبره سعر البيع ونحسب الشراء
-        if(prices.length === 1) { sell = prices[0]; buy = sell * 0.95; }
+    const sellMap={999:d['999_sell'],925:d['925_sell'],800:d['800_sell']};
 
-        return `
-          <tr>
-            <td class="karat-label">${row.k}</td>
-            <td class="buy-price">${buy ? fmt(buy, 2) : '—'}</td>
-            <td class="sell-price">${sell ? fmt(sell, 2) : '—'}</td>
-            <td class="spread-val">${(sell && buy) ? fmt(sell - buy, 2) : '—'}</td>
-          </tr>`;
-      }).join('');
-    }
-    
-    $('err-silver').style.display = 'none';
-  } catch (e) {
-    console.error(e);
-    $('err-silver').style.display = 'block';
-  }
+    const rows=[{k:'عيار 999',v:999,hl:false},{k:'عيار 925',v:925,hl:true},{k:'عيار 800',v:800,hl:false}];
+    $('silver-tbody').innerHTML=rows.map(row=>{
+      const buy=silverPrices[row.v];
+      const sell=sellMap[row.v]||(buy?buy*1.015:null);
+      if(!buy) return `<tr><td class="karat-label">${row.k}</td><td colspan="3" style="color:var(--muted)">لا يوجد سعر</td></tr>`;
+      const sp=sell-buy;
+      return`<tr class="${row.hl?'hl-row-s':''}"><td class="karat-label">${row.k}</td><td class="buy-price">${fmt(buy,2)}</td><td class="sell-price">${fmt(sell,2)}</td><td class="spread-val">${fmt(sp,2)}</td></tr>`;
+    }).join('');
+
+    $('s-pound').textContent=fmt(d.poundBuy||silverPrices[925]*8,0)+' ج';
+    $('s-oz').textContent=fmt(silverPrices[999]*31.1035,0)+' ج';
+    $('s-kg').textContent=fmt(silverPrices[999]*1000,0)+' ج';
+    $('s-screen').textContent=d.ounceUsd?('$'+fmt(d.ounceUsd,2)):'—';
+
+    if(d.stale) $('err-silver').style.display='none';
+
+    calcSilver(); calcZakat();
+    checkAlerts('silver');
+  }catch(e){console.error('Silver load error:',e.message);$('err-silver').style.display='block';}
 }
+
 async function loadCurrencies(){
   try{
     const r=await fetch('https://open.er-api.com/v6/latest/EGP');
