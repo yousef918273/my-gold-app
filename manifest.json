@@ -1,8 +1,8 @@
 {
-  "name": "سعر النهارده | Sor Al-Naharda",
+  "name": "سعر النهارده - أسعار الذهب والعملات",
   "short_name": "سعر النهارده",
-  "description": "أسعار الذهب والفضة والعملات في مصر لحظة بلحظة",
-  "start_url": "/",
+  "description": "أسعار الذهب والفضة والعملات في مصر لحظة بلحظة. تحديث تلقائي، حاسبات ذكية، تنبيهات أسعار، محفظة استثمار، وحاسبة زكاة.",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#0D0D0D",
   "theme_color": "#C9A84C",
@@ -10,51 +10,103 @@
   "scope": "/",
   "lang": "ar",
   "dir": "rtl",
+  "categories": ["finance", "utilities", "news"],
   "icons": [
     {
-      "src": "favicon.png",
+      "src": "icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "apple-touch-icon.png",
+      "src": "icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
     }
   ],
-  "categories": ["finance", "utilities", "productivity"],
   "screenshots": [
     {
-      "src": "screenshot-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Desktop View"
-    },
-    {
-      "src": "screenshot-narrow.png",
-      "sizes": "750x1334",
+      "src": "screenshots/screenshot-narrow-1.png",
+      "sizes": "1080x1920",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mobile View"
+      "label": "أسعار الذهب"
+    },
+    {
+      "src": "screenshots/screenshot-narrow-2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "العملات والفضة"
+    },
+    {
+      "src": "screenshots/screenshot-wide-1.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "الإصدار المكتبي"
     }
   ],
   "shortcuts": [
     {
       "name": "أسعار الذهب",
-      "short_name": "الذهب",
-      "description": "عرض أسعار الذهب",
-      "url": "/?tab=gold",
-      "icons": [{ "src": "favicon.png", "sizes": "192x192" }]
+      "short_name": "ذهب",
+      "description": "شاهد أسعار الذهب الحالية",
+      "url": "/index.html#gold",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "العملات",
-      "short_name": "العملات",
-      "description": "عرض أسعار العملات",
-      "url": "/?tab=currency",
-      "icons": [{ "src": "favicon.png", "sizes": "192x192" }]
+      "short_name": "عملات",
+      "description": "أسعار العملات الأجنبية",
+      "url": "/index.html#currency",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "محفظتي",
+      "short_name": "محفظة",
+      "description": "تتبع استثماراتك",
+      "url": "/index.html#portfolio",
+      "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
