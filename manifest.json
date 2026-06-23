@@ -1,11 +1,11 @@
 {
   "name": "سعر النهارده - أسعار الذهب والعملات",
   "short_name": "سعر النهارده",
-  "description": "أسعار الذهب والفضة والعملات في مصر لحظة بلحظة. تحديث تلقائي، حاسبات ذكية، تنبيهات أسعار، محفظة استثمار، وحاسبة زكاة.",
+  "description": "أسعار الذهب والفضة والعملات في مصر لحظة بلحظة. تحديث تلقائي كل 5 دقائق. حاسبات ذكية، تنبيهات أسعار، محفظة استثمار، وحاسبة زكاة.",
   "start_url": "/index.html",
   "display": "standalone",
-  "background_color": "#0D0D0D",
-  "theme_color": "#C9A84C",
+  "background_color": "#f5f3ef",
+  "theme_color": "#b8860b",
   "orientation": "portrait",
   "scope": "/",
   "lang": "ar",
@@ -89,21 +89,21 @@
       "name": "أسعار الذهب",
       "short_name": "ذهب",
       "description": "شاهد أسعار الذهب الحالية",
-      "url": "/index.html#gold",
+      "url": "/index.html",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "العملات",
       "short_name": "عملات",
       "description": "أسعار العملات الأجنبية",
-      "url": "/index.html#currency",
+      "url": "/index.html",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "محفظتي",
       "short_name": "محفظة",
       "description": "تتبع استثماراتك",
-      "url": "/index.html#portfolio",
+      "url": "/index.html",
       "icons": [{ "src": "icons/icon-96x96.png", "sizes": "96x96" }]
     }
   ],
