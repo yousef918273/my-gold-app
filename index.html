@@ -1058,7 +1058,29 @@ window.addEventListener('resize',()=>{ drawMiniChart(); });
   const supabaseKey='sb_publishable_XYhvHo3cpN8IVII8PZ0GiQ_yzvHvUgl';
   const supabase=createClient(supabaseUrl,supabaseKey);
   window.supabase=supabase;
+// تأكد من جلب الـ ID الخاص بالمستخدم الحالي
+const { data: { session } } = await supabase.auth.getSession();
+const currentUserId = session?.user?.id;
 
+if (currentUserId) {
+  supabase
+    .channel('custom-portfolio-channel')
+    .on(
+      'postgres_changes',
+      {
+        event: '*', // استمع لكل الأحداث (إضافة، تعديل، حذف)
+        schema: 'public',
+        table: 'portfolios',
+        filter: `user_id=eq.${currentUserId}` // فلترة ذكية لبيانات المستخدم فقط
+      },
+      (payload) => {
+        console.log('تحديث لحظي في المحفظة:', payload);
+        // استدعاء دالة تحديث واجهة المستخدم فوراً
+        window.loadPortfolioForUser(currentUserId);
+      }
+    )
+    .subscribe();
+}
   async function updateAuthUI(session){
     const loginBtn=document.getElementById('login-btn');
     const userBadge=document.getElementById('user-badge');
