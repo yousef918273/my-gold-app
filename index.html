@@ -645,60 +645,61 @@ $('err-gold').style.display='none'; // ✅ — لو وصلت للـ try بنجا
   }catch(e){console.error('Gold load error:',e.message);$('err-gold').style.display='block';}
 }
 
-async function loadSilver(){
-  try{
+async function loadSilver() {
+  try {
     const response = await fetch(`${SCRAPER_BASE}/api/silver`);
     const d = await response.json();
-    
-    // سطر اختبار للتأكد من وصول البيانات للـ Console (F12)
-    console.log("Silver Data from Server:", d); 
 
-    // التأكد من أن السيرفر أعاد بيانات صحيحة
-    if (!d || Object.keys(d).length === 0) throw new Error('البيانات فارغة');
+    // تأكد من أن البيانات وصلت بشكل سليم
+    console.log("Silver Data from Server:", d);
 
-    // تحديث الأسعار بمرونة أكبر (استخدام القيم المباشرة أو الافتراضية)
+    if (!d || Object.keys(d).length === 0) throw new Error('لا توجد بيانات فضة');
+
+    // تحديث الأسعار الأساسية من السيرفر
     silverPrices = {
-        999: d['999'] || 0, 
-        925: d['925'] || 0, 
-        800: d['800'] || 0
+      999: d['999'] || 0,
+      925: d['925'] || 0,
+      800: d['800'] || 0
     };
 
     const rows = [
-        {k: 'عيار 999', v: 999, hl: false},
-        {k: 'عيار 925', v: 925, hl: true},
-        {k: 'عيار 800', v: 800, hl: false}
+      { k: 'عيار 999', v: 999, hl: false },
+      { k: 'عيار 925', v: 925, hl: true },
+      { k: 'عيار 800', v: 800, hl: false }
     ];
-    
+
     const tbody = $('silver-tbody');
     if (tbody) {
-        tbody.innerHTML = rows.map(row => {
-            const buy = silverPrices[row.v];
-            // حساب سعر البيع تلقائياً إذا لم يرسله السيرفر
-            const sell = d[row.v + '_sell'] || (buy ? buy * 1.015 : null);
-            
-            return `
-                <tr class="${row.hl ? 'hl-row-s' : ''}">
-                    <td class="karat-label">${row.k}</td>
-                    <td class="buy-price">${buy ? fmt(buy, 2) : '—'}</td>
-                    <td class="sell-price">${sell ? fmt(sell, 2) : '—'}</td>
-                    <td class="spread-val">${(sell && buy) ? fmt(sell - buy, 2) : '—'}</td>
-                </tr>`;
-        }).join('');
+      tbody.innerHTML = rows.map(row => {
+        const buy = silverPrices[row.v];
+        // المنطق: سعر البيع للناس عادة أكبر من سعر الشراء منهم
+        // نأخذ القيمة من السيرفر إذا وجدت، وإلا نحسب هامش بسيط
+        const sell = d[row.v + '_sell'] || (buy ? buy * 1.015 : null);
+
+        // هنا الترتيب يطابق الـ <th>: العيار | شراء | بيع | الفرق
+        return `
+          <tr class="${row.hl ? 'hl-row-s' : ''}">
+            <td class="karat-label">${row.k}</td>
+            <td class="buy-price">${buy ? fmt(buy, 2) : '—'}</td>
+            <td class="sell-price">${sell ? fmt(sell, 2) : '—'}</td>
+            <td class="spread-val">${(sell && buy) ? fmt(sell - buy, 2) : '—'}</td>
+          </tr>`;
+      }).join('');
     }
 
-    // تحديث البطاقات ببيانات الفضة
+    // تحديث البطاقات الإضافية في صفحة الفضة
     if (silverPrices[999] > 0) {
-        $('s-pound').textContent = fmt(silverPrices[999] * 8, 0) + ' ج';
-        $('s-oz').textContent = fmt(silverPrices[999] * 31.1035, 0) + ' ج';
-        $('s-kg').textContent = fmt(silverPrices[999] * 1000, 0) + ' ج';
-        $('s-screen').textContent = d.ounceUsd ? ('$' + fmt(d.ounceUsd, 2)) : '—';
+      $('s-pound').textContent = fmt(silverPrices[999] * 8, 0) + ' ج';
+      $('s-oz').textContent = fmt(silverPrices[999] * 31.1035, 0) + ' ج';
+      $('s-kg').textContent = fmt(silverPrices[999] * 1000, 0) + ' ج';
+      $('s-screen').textContent = d.ounceUsd ? ('$' + fmt(d.ounceUsd, 2)) : '—';
     }
 
     $('err-silver').style.display = 'none';
-    calcSilver(); 
+    calcSilver();
     calcZakat();
     checkAlerts('silver');
-  } catch(e) {
+  } catch (e) {
     console.error('Silver error:', e);
     $('err-silver').style.display = 'block';
   }
