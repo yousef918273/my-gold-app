@@ -374,6 +374,15 @@ header .menu-btn:hover{background:var(--surface-light)}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg>
       حساب الزكاة
     </button>
+    <div style="border-top:1px solid var(--surface-light);margin:8px 0"></div>
+    <button class="sidebar-tab" id="tab-login" onclick="goToLogin()" style="background:var(--gold);color:var(--text-dark)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+      تسجيل الدخول
+    </button>
+    <button class="sidebar-tab" id="tab-logout" onclick="doLogout()" style="display:none;background:rgba(244,67,54,0.15);color:var(--red)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      تسجيل الخروج
+    </button>
   </div>
 
   <div class="sidebar-footer">
@@ -1015,16 +1024,29 @@ async function addPortfolio(){
 }
 
 async function removePortfolio(id){
-  portfolio=portfolio.filter(x=>x.id!==id);
+  // Find the item first to confirm it exists
+  const itemIndex = portfolio.findIndex(x=>x.id==id);
+  if(itemIndex===-1){console.log('[Portfolio] Item not found:',id);return;}
+
+  // Remove from local array
+  portfolio.splice(itemIndex,1);
   savePortfolio();
+
+  // Try to remove from Supabase if logged in
   const sb=getSupabase();
   if(sb&&currentUserId){
     try{
-      const isRealId=id<1000000000000;
-      if(isRealId){await sb.from('portfolios').delete().eq('id',id);}
-    }catch(e){console.log('[Sync] Delete failed, keeping local:',e.message);}
+      // Check if this is a real DB id (number) or temp id (timestamp)
+      const isRealId = typeof id === 'number' && id < 1000000000000;
+      if(isRealId){
+        await sb.from('portfolios').delete().eq('id',id);
+        console.log('[Portfolio] Deleted from DB:',id);
+      }
+    }catch(e){console.log('[Portfolio] DB delete failed:',e.message);}
   }
+
   updatePortfolio();
+  showToast('🗑️ تم الحذف','info');
 }
 
 function updatePortfolio(){
@@ -1178,6 +1200,13 @@ function checkAlerts(onlyType,rates){
 
 // ===== AUTH =====
 function openLoginModal(){window.location.href='login.html';}
+function goToLogin(){window.location.href='login.html';}
+function doLogout(){
+  if(confirm('متأكد إنك عايز تسجّل خروج؟')){
+    logout();
+    toggleSidebar();
+  }
+}
 
 // ===== SERVICE WORKER =====
 if('serviceWorker' in navigator){
@@ -1206,6 +1235,8 @@ async function updateAuthUI(session){
   const sidebarName=document.getElementById('sidebarName');
   const sidebarEmail=document.getElementById('sidebarEmail');
   const sidebarAvatar=document.getElementById('sidebarAvatar');
+  const loginBtn=document.getElementById('tab-login');
+  const logoutBtn=document.getElementById('tab-logout');
 
   if(session&&session.user){
     const meta=session.user.user_metadata||{};
@@ -1224,7 +1255,11 @@ async function updateAuthUI(session){
       }
     }
     setTimeout(()=>{if(window.loadPortfolioForUser)window.loadPortfolioForUser(session.user.id);},100);
+    if(loginBtn)loginBtn.style.display='none';
+    if(logoutBtn)logoutBtn.style.display='flex';
   }else{
+    if(loginBtn)loginBtn.style.display='flex';
+    if(logoutBtn)logoutBtn.style.display='none';
     if(sidebarName)sidebarName.textContent='زائر';
     if(sidebarEmail)sidebarEmail.textContent='سجّل دخولك';
     if(sidebarAvatar)sidebarAvatar.innerHTML='<span class="avatar-icon">👤</span>';
