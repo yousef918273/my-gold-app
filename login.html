@@ -2,273 +2,165 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>تسجيل الدخول | سعر النهارده</title>
-<meta name="description" content="تسجيل الدخول إلى سعر النهارده - أسعار الذهب والعملات في مصر">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#0a0a0a">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
-:root {
-  --gold: #b8860b;
-  --gold-light: #d4a843;
-  --gold-pale: #faf6ed;
-  --bg: #f5f3ef;
-  --surface: #ffffff;
-  --text: #1a1a1a;
-  --text-secondary: #666666;
-  --muted: #999999;
-  --border: #ebe8e3;
-  --green: #2e7d32;
-  --red: #c62828;
-  --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
-  --shadow-hover: 0 4px 16px rgba(0,0,0,0.08);
-  --radius: 16px;
+:root{
+  --bg:#0a0a0a;
+  --surface:#1a1a1a;
+  --surface-light:#2a2a2a;
+  --card:#ffffff;
+  --card-alt:#f5f5f5;
+  --text:#ffffff;
+  --text-dark:#1a1a1a;
+  --text-muted:#888888;
+  --gold:#ffc107;
+  --gold-dark:#e6ac00;
+  --gold-pale:#faf6ed;
+  --green:#4caf50;
+  --red:#f44336;
+  --blue:#2196f3;
+  --shadow:0 4px 20px rgba(0,0,0,0.4);
+  --radius:16px;
+  --radius-sm:12px;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
 
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'Cairo', sans-serif;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
+/* Card */
+.auth-card{
+  background:var(--surface);border-radius:var(--radius);width:100%;max-width:420px;
+  padding:40px 32px;box-shadow:var(--shadow);border:1px solid var(--surface-light);
 }
 
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  width: 100%;
-  max-width: 420px;
-  padding: 40px 32px;
-  box-shadow: var(--shadow);
-  transition: box-shadow 0.2s;
-}
+/* Brand */
+.brand{text-align:center;margin-bottom:32px}
+.brand a{text-decoration:none}
+.brand .logo{font-size:1.6rem;font-weight:900;color:var(--gold);letter-spacing:-0.5px}
+.brand .logo span{color:var(--text)}
+.brand .tagline{font-size:0.78rem;color:var(--text-muted);margin-top:8px;font-weight:500}
 
-.card:hover {
-  box-shadow: var(--shadow-hover);
-}
+/* Mode Title */
+.mode-title{text-align:center;font-size:1.1rem;font-weight:700;margin-bottom:24px;color:var(--text)}
 
-.brand {
-  text-align: center;
-  margin-bottom: 32px;
+/* Form */
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:0.8rem;color:var(--text-muted);margin-bottom:6px;font-weight:600}
+.form-group input{
+  width:100%;background:var(--surface-light);border:1.5px solid #3a3a3a;
+  color:var(--text);padding:13px 16px;border-radius:var(--radius-sm);
+  font-family:'Cairo',sans-serif;font-size:0.92rem;transition:border-color 0.2s,box-shadow 0.2s;
 }
+.form-group input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,193,7,0.1)}
+.form-group input::placeholder{color:#666}
 
-.brand a {
-  text-decoration: none;
+/* Buttons */
+.btn{
+  width:100%;border:none;padding:13px;border-radius:var(--radius-sm);
+  font-family:'Cairo',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;
+  transition:all 0.15s;margin-top:4px;
 }
-
-.brand .logo {
-  font-size: 1.6rem;
-  font-weight: 900;
-  color: var(--gold);
-  letter-spacing: -0.5px;
+.btn:active{transform:scale(0.98)}
+.btn-gold{background:var(--gold);color:var(--text-dark)}
+.btn-gold:hover{background:var(--gold-dark)}
+.btn-google{
+  background:var(--surface-light);color:var(--text);display:flex;align-items:center;
+  justify-content:center;gap:10px;border:1.5px solid #3a3a3a;margin-top:0;
 }
-
-.brand .logo span {
-  color: var(--text);
+.btn-google:hover{background:#333;border-color:var(--gold)}
+.btn-outline{
+  background:transparent;color:var(--gold);border:1.5px solid var(--gold);margin-top:8px;
 }
+.btn-outline:hover{background:rgba(255,193,7,0.1)}
 
-.brand .tagline {
-  font-size: 0.78rem;
-  color: var(--muted);
-  margin-top: 8px;
-  font-weight: 500;
+/* Divider */
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-muted);font-size:0.75rem;font-weight:600}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--surface-light)}
+
+/* Toggle */
+.toggle{text-align:center;margin-top:18px;font-size:0.85rem;color:var(--text-muted)}
+.toggle a{color:var(--gold);text-decoration:none;font-weight:700;cursor:pointer}
+.toggle a:hover{text-decoration:underline}
+
+/* Messages */
+.error{background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.3);border-radius:12px;padding:12px 14px;color:var(--red);font-size:0.82rem;margin-bottom:16px;display:none;font-weight:600}
+.success{background:rgba(76,175,80,0.1);border:1px solid rgba(76,175,80,0.3);border-radius:12px;padding:12px 14px;color:var(--green);font-size:0.82rem;margin-bottom:16px;display:none;font-weight:600}
+
+/* Forgot Password Link */
+.forgot-link{text-align:center;margin:12px 0;font-size:0.82rem}
+.forgot-link a{color:var(--text-muted);text-decoration:none;cursor:pointer;transition:color 0.2s}
+.forgot-link a:hover{color:var(--gold);text-decoration:underline}
+
+/* Footer */
+.footer-note{text-align:center;font-size:0.68rem;color:var(--text-muted);margin-top:24px;line-height:1.6}
+.footer-note a{color:var(--gold);text-decoration:none}
+.footer-note a:hover{text-decoration:underline}
+
+/* Spinner */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.hidden{display:none !important}
+
+/* Back link */
+.back-link{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;font-size:0.85rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
+.back-link:hover{color:var(--gold)}
+.back-link svg{width:18px;height:18px}
+
+/* ===== FORGOT PASSWORD MODAL ===== */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:3000;
+  display:none;align-items:center;justify-content:center;padding:16px;
 }
-
-.mode-title {
-  text-align: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  margin-bottom: 24px;
-  color: var(--text);
+.modal-overlay.open{display:flex}
+.modal-card{
+  background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:400px;
+  color:var(--text);animation:slideUp 0.3s ease;border:1px solid var(--surface-light);
 }
-
-.form-group {
-  margin-bottom: 16px;
+@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.modal-card h2{font-size:1.1rem;margin-bottom:8px;color:var(--text);text-align:center}
+.modal-card p{font-size:0.82rem;color:var(--text-muted);text-align:center;margin-bottom:20px}
+.modal-card input{
+  width:100%;background:var(--surface-light);border:1.5px solid #3a3a3a;
+  color:var(--text);padding:13px 16px;border-radius:var(--radius-sm);
+  font-family:'Cairo',sans-serif;font-size:0.92rem;margin-bottom:16px;
 }
+.modal-card input:focus{outline:none;border-color:var(--gold)}
+.modal-card .btn-row{display:flex;gap:8px;margin-top:8px}
+.modal-card .btn-row button{flex:1;padding:12px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif}
+.modal-card .btn-save{background:var(--gold);color:var(--text-dark)}
+.modal-card .btn-cancel{background:var(--surface-light);color:var(--text)}
 
-.form-group label {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-  font-weight: 600;
-}
-
-.form-group input {
-  width: 100%;
-  background: var(--bg);
-  border: 1.5px solid var(--border);
-  color: var(--text);
-  padding: 12px 16px;
-  border-radius: 12px;
-  font-family: 'Cairo', sans-serif;
-  font-size: 0.92rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: var(--gold-light);
-  box-shadow: 0 0 0 3px rgba(184,134,11,0.1);
-}
-
-.form-group input::placeholder {
-  color: var(--muted);
-}
-
-.btn {
-  width: 100%;
-  border: none;
-  padding: 13px;
-  border-radius: 12px;
-  font-family: 'Cairo', sans-serif;
-  font-weight: 700;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.15s;
-  margin-top: 4px;
-}
-
-.btn:active {
-  transform: scale(0.98);
-}
-
-.btn-gold {
-  background: var(--gold);
-  color: #fff;
-}
-
-.btn-gold:hover {
-  background: #9a7009;
-}
-
-.btn-google {
-  background: var(--surface);
-  color: var(--text);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  border: 1.5px solid var(--border);
-  margin-top: 0;
-}
-
-.btn-google:hover {
-  background: var(--gold-pale);
-  border-color: var(--gold-light);
-}
-
-.btn-google svg {
-  flex-shrink: 0;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 20px 0;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.divider::before,
-.divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-.toggle {
-  text-align: center;
-  margin-top: 18px;
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-}
-
-.toggle a {
-  color: var(--gold);
-  text-decoration: none;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.toggle a:hover {
-  text-decoration: underline;
-}
-
-.error {
-  background: #ffebee;
-  border: 1px solid #ffcdd2;
-  border-radius: 12px;
-  padding: 12px 14px;
-  color: var(--red);
-  font-size: 0.82rem;
-  margin-bottom: 16px;
-  display: none;
-  font-weight: 600;
-}
-
-.success {
-  background: #e8f5e9;
-  border: 1px solid #c8e6c9;
-  border-radius: 12px;
-  padding: 12px 14px;
-  color: var(--green);
-  font-size: 0.82rem;
-  margin-bottom: 16px;
-  display: none;
-  font-weight: 600;
-}
-
-.footer-note {
-  text-align: center;
-  font-size: 0.68rem;
-  color: var(--muted);
-  margin-top: 24px;
-  line-height: 1.6;
-}
-
-.spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255,255,255,0.4);
-  border-top-color: #fff;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  vertical-align: middle;
-  margin-right: 6px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.hidden {
-  display: none !important;
-}
-
-@media (max-width: 480px) {
-  .card {
-    padding: 32px 24px;
-  }
-  .brand .logo {
-    font-size: 1.4rem;
-  }
+@media (max-width:480px){
+  .auth-card{padding:32px 24px}
+  .brand .logo{font-size:1.4rem}
 }
 </style>
+<base target="_blank">
 </head>
 <body>
 
-<div class="card">
+<!-- Forgot Password Modal -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal-card">
+    <h2>🔐 نسيت كلمة المرور؟</h2>
+    <p>اكتب بريدك الإلكتروني وهنبعتلك رابط إعادة التعيين</p>
+    <input type="email" id="forgot-email" placeholder="your@email.com">
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeForgotModal()">إلغاء</button>
+      <button class="btn-save" onclick="sendResetEmail()">إرسال الرابط</button>
+    </div>
+    <div class="success" id="forgot-success" style="margin-top:12px"></div>
+    <div class="error" id="forgot-error" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<!-- Main Auth Card -->
+<div class="auth-card">
   <div class="brand">
     <a href="index.html">
       <div class="logo">سعر <span>النهارده</span></div>
@@ -298,6 +190,11 @@ body {
 
   <button class="btn btn-gold" id="actionBtn" onclick="handleAction()">دخول</button>
 
+  <!-- Forgot Password Link -->
+  <div class="forgot-link" id="forgotWrap">
+    <a onclick="openForgotModal()">نسيت كلمة المرور؟</a>
+  </div>
+
   <div class="toggle">
     <span id="toggleText">لسه معندكش حساب؟</span>
     <a onclick="toggleMode()" id="toggleLink">سجّل جديد</a>
@@ -316,8 +213,14 @@ body {
   </button>
 
   <div class="footer-note">
-    بتسجيل الدخول، بتوافق على استخدام البيانات بما يتماشى مع <a href="privacy-policy.html" style="color:var(--gold);text-decoration:none;">سياسة الخصوصية</a>.
+    بتسجيل الدخول، بتوافق على <a href="terms-of-service.html">شروط الاستخدام</a> و <a href="privacy-policy.html">سياسة الخصوصية</a>.
   </div>
+
+  <!-- Back to Home -->
+  <a href="index.html" class="back-link">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    الرجوع للرئيسية
+  </a>
 </div>
 
 <script type="module">
@@ -363,6 +266,7 @@ function setLoad(btn, loading, txt) {
   }
 }
 
+// ===== TOGGLE LOGIN/SIGNUP =====
 window.toggleMode = function() {
   isLogin = !isLogin;
   $('modeTitle').textContent = isLogin ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
@@ -370,9 +274,11 @@ window.toggleMode = function() {
   $('toggleText').textContent = isLogin ? 'لسه معندكش حساب؟' : 'عندك حساب بالفعل؟';
   $('toggleLink').textContent = isLogin ? 'سجّل جديد' : 'سجّل دخول';
   $('nameWrap').classList.toggle('hidden', isLogin);
+  $('forgotWrap').classList.toggle('hidden', !isLogin);
   clearMsgs();
 };
 
+// ===== GOOGLE LOGIN =====
 window.googleLogin = async function() {
   try {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -388,6 +294,7 @@ window.googleLogin = async function() {
   }
 };
 
+// ===== SAVE PROFILE =====
 async function saveProfile(userId, name, email) {
   try {
     await supabase.from('profiles').upsert({
@@ -398,6 +305,7 @@ async function saveProfile(userId, name, email) {
   }
 }
 
+// ===== LOGIN / SIGNUP ACTION =====
 window.handleAction = async function() {
   clearMsgs();
   const email = $('email').value.trim();
@@ -437,8 +345,63 @@ window.handleAction = async function() {
   }
 };
 
+// ===== FORGOT PASSWORD =====
+window.openForgotModal = function() {
+  $('forgotModal').classList.add('open');
+  $('forgot-email').value = $('email').value || '';
+  $('forgot-success').style.display = 'none';
+  $('forgot-error').style.display = 'none';
+};
+
+window.closeForgotModal = function() {
+  $('forgotModal').classList.remove('open');
+};
+
+window.sendResetEmail = async function() {
+  const email = $('forgot-email').value.trim();
+  const successEl = $('forgot-success');
+  const errorEl = $('forgot-error');
+
+  successEl.style.display = 'none';
+  errorEl.style.display = 'none';
+
+  if (!email) {
+    errorEl.textContent = 'اكتب بريدك الإلكتروني';
+    errorEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.querySelector('#forgotModal .btn-save');
+  setLoad(btn, true, 'جار الإرسال');
+
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + '/login.html'
+    });
+    if (error) throw error;
+
+    successEl.textContent = '✅ تم إرسال رابط إعادة التعيين! اتفحص بريدك الإلكتروني.';
+    successEl.style.display = 'block';
+    setTimeout(closeForgotModal, 3000);
+  } catch (err) {
+    errorEl.textContent = '❌ ' + (err.message || 'حدث خطأ، جرب تاني');
+    errorEl.style.display = 'block';
+  } finally {
+    setLoad(btn, false, 'إرسال الرابط');
+  }
+};
+
+// Close modal on overlay click
+$('forgotModal').addEventListener('click', (e) => {
+  if (e.target === $('forgotModal')) closeForgotModal();
+});
+
+// Enter key support
 $('pass').addEventListener('keydown', (e) => {
   if (e.key === 'Enter') handleAction();
+});
+$('forgot-email').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendResetEmail();
 });
 </script>
 </body>
