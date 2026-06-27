@@ -310,6 +310,47 @@ header .menu-btn:hover{background:var(--surface-light)}
 .modal-card .btn-save{background:var(--gold);color:var(--text-dark)}
 .modal-card .btn-cancel{background:#eee;color:var(--text-dark)}
 
+/* ===== Offline Banner ===== */
+.offline-banner{
+  position:fixed;bottom:0;left:0;right:0;z-index:500;
+  background:rgba(244,67,54,0.95);color:#fff;
+  text-align:center;padding:10px 16px;font-size:0.82rem;font-weight:700;
+  display:none;backdrop-filter:blur(4px);
+}
+.offline-banner.show{display:block}
+
+/* ===== Share Button ===== */
+.share-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--surface);border:1px solid var(--surface-light);
+  color:var(--text);border-radius:var(--radius-sm);padding:12px;
+  font-family:'Cairo',sans-serif;font-size:0.85rem;font-weight:700;
+  cursor:pointer;margin:0 16px 8px;width:calc(100% - 32px);transition:all 0.2s;
+}
+.share-btn:hover{background:var(--gold);color:var(--text-dark);border-color:var(--gold)}
+
+/* ===== Notification Bell ===== */
+.notif-bell{
+  position:relative;width:44px;height:44px;border-radius:50%;
+  background:var(--surface);border:none;color:var(--text);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  font-size:1.2rem;transition:background 0.2s;
+}
+.notif-bell:hover{background:var(--gold);color:var(--text-dark)}
+.notif-bell .badge{
+  position:absolute;top:6px;right:6px;width:8px;height:8px;
+  border-radius:50%;background:var(--red);border:2px solid var(--bg);
+  display:none;
+}
+.notif-bell .badge.show{display:block}
+
+/* ===== Alert Items ===== */
+.alert-item{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 12px;background:var(--surface-light);border-radius:10px;
+  font-size:0.8rem;margin-bottom:6px;
+}
+
 /* ===== Responsive ===== */
 @media (max-width:480px){
   .sidebar{width:260px}
@@ -366,6 +407,10 @@ header .menu-btn:hover{background:var(--surface-light)}
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
       الملف الشخصي
     </button>
+    <button class="sidebar-tab" id="tab-alerts" onclick="showSidebarTab(5)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      التنبيهات
+    </button>
     <button class="sidebar-tab" id="tab-invest" onclick="showSidebarTab(3)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
       الاستثمار
@@ -404,6 +449,9 @@ header .menu-btn:hover{background:var(--surface-light)}
   </div>
 </div>
 
+<!-- Offline Banner -->
+<div class="offline-banner" id="offline-banner">📵 أنت غير متصل — يتم عرض آخر أسعار محفوظة</div>
+
 <!-- Toast -->
 <div class="toast-container" id="toast-container"></div>
 
@@ -411,7 +459,10 @@ header .menu-btn:hover{background:var(--surface-light)}
 <header>
   <button class="menu-btn" onclick="toggleSidebar()">☰</button>
   <div class="logo">سعر <span>النهارده</span></div>
-  <div class="flag"><img src="https://flagcdn.com/w80/eg.png" alt="EG"></div>
+  <button class="notif-bell" id="notif-bell-btn" onclick="requestNotificationPermission()" title="تفعيل التنبيهات">
+    🔔
+    <span class="badge" id="notif-badge"></span>
+  </button>
 </header>
 
 <!-- Main 3 Tabs -->
@@ -427,6 +478,9 @@ header .menu-btn:hover{background:var(--surface-light)}
 
   <div class="sec-title">متوسط أسعار <span class="highlight">الذهب</span> الاسترشادي المصري</div>
 
+  <div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:12px;padding:0 16px 6px;font-size:0.7rem;font-weight:700;color:var(--text-muted);text-align:center">
+    <div></div><div>🛒 شراء</div><div>💰 بيع</div>
+  </div>
   <div class="price-list" id="gold-list">
     <div class="price-row white"><div class="karat">عيار ٢٤</div><div class="price"><div class="skeleton" style="height:24px"></div></div><div class="price"><div class="skeleton" style="height:24px"></div></div></div>
     <div class="price-row gold"><div class="karat">عيار ٢١</div><div class="price"><div class="skeleton" style="height:24px"></div></div><div class="price"><div class="skeleton" style="height:24px"></div></div></div>
@@ -442,7 +496,15 @@ header .menu-btn:hover{background:var(--surface-light)}
   </div>
 
   <div class="chart-card">
-    <h3>📉 تحركات السعر (7 أيام)</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 style="margin:0">📉 تحركات السعر</h3>
+      <div style="display:flex;gap:4px">
+        <button class="chart-period-btn active" data-days="7" onclick="setChartPeriod(7)" style="padding:4px 8px;border-radius:8px;border:1px solid var(--surface-light);background:var(--gold);color:var(--text-dark);font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif">7أ</button>
+        <button class="chart-period-btn" data-days="30" onclick="setChartPeriod(30)" style="padding:4px 8px;border-radius:8px;border:1px solid var(--surface-light);background:var(--surface-light);color:var(--text-muted);font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif">شهر</button>
+        <button class="chart-period-btn" data-days="90" onclick="setChartPeriod(90)" style="padding:4px 8px;border-radius:8px;border:1px solid var(--surface-light);background:var(--surface-light);color:var(--text-muted);font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif">3ش</button>
+        <button class="chart-period-btn" data-days="365" onclick="setChartPeriod(365)" style="padding:4px 8px;border-radius:8px;border:1px solid var(--surface-light);background:var(--surface-light);color:var(--text-muted);font-size:0.72rem;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif">سنة</button>
+      </div>
+    </div>
     <canvas id="mini-chart"></canvas>
   </div>
 
@@ -458,6 +520,11 @@ header .menu-btn:hover{background:var(--surface-light)}
       <button class="vote-btn" id="vote-sell-btn" onclick="vote('sell')">👎 هينزل</button>
     </div>
   </div>
+
+  <!-- زر المشاركة -->
+  <button class="share-btn" onclick="sharePrice('gold')">
+    📤 شارك أسعار الذهب
+  </button>
 
   <div class="calc-card">
     <h3>⚖️ حاسبة الذهب</h3>
@@ -475,6 +542,9 @@ header .menu-btn:hover{background:var(--surface-light)}
 
   <div class="sec-title">متوسط أسعار <span class="highlight">الفضة</span> الاسترشادي المصري</div>
 
+  <div style="display:grid;grid-template-columns:70px 1fr 1fr;gap:12px;padding:0 16px 6px;font-size:0.7rem;font-weight:700;color:var(--text-muted);text-align:center">
+    <div></div><div>🛒 شراء</div><div>💰 بيع</div>
+  </div>
   <div class="price-list" id="silver-list">
     <div class="price-row white"><div class="karat">عيار ٩٩٩</div><div class="price"><div class="skeleton" style="height:24px"></div></div><div class="price"><div class="skeleton" style="height:24px"></div></div></div>
     <div class="price-row gray"><div class="karat">عيار ٩٢٥</div><div class="price"><div class="skeleton" style="height:24px"></div></div><div class="price"><div class="skeleton" style="height:24px"></div></div></div>
@@ -576,6 +646,70 @@ header .menu-btn:hover{background:var(--surface-light)}
       <div class="nisab-bar-bg" style="height:12px;background:#eee;border-radius:50px;overflow:hidden;margin:8px 0"><div class="nisab-bar" id="z-bar" style="width:0%;height:100%;background:#9c27b0;border-radius:50px;transition:width 0.8s"></div></div>
       <div class="zr-row" style="margin-top:6px"><span>الزكاة (2.5%)</span><span id="z-due" style="font-size:1.1rem;font-weight:900;color:#9c27b0">—</span></div>
     </div>
+  </div>
+</div>
+
+<!-- ===== ALERTS PANEL (m5) ===== -->
+<div class="panel" id="m5">
+  <div class="calc-card">
+    <h3>🔔 تنبيهات الأسعار</h3>
+    <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:16px">هتبعتلك إشعار لما السعر يوصل الرقم اللي تحدده</p>
+
+    <!-- تنبيهات الذهب -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:0.82rem;font-weight:700;color:var(--gold);margin-bottom:8px">🥇 الذهب</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        <select id="ag-karat" style="flex:1;min-width:90px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem">
+          <option value="24">عيار 24</option><option value="21" selected>عيار 21</option><option value="18">عيار 18</option><option value="14">عيار 14</option>
+        </select>
+        <select id="ag-dir" style="flex:1;min-width:80px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem">
+          <option value="above">يصعد لـ</option><option value="below">ينزل لـ</option>
+        </select>
+        <input type="number" id="ag-price" placeholder="السعر" style="flex:1;min-width:80px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem"/>
+        <button onclick="addAlert('gold')" style="background:var(--gold);color:var(--text-dark);border:none;padding:8px 14px;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem">+</button>
+      </div>
+      <div id="alerts-gold"></div>
+    </div>
+
+    <!-- تنبيهات الفضة -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:0.82rem;font-weight:700;color:var(--text-muted);margin-bottom:8px">🪙 الفضة</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        <select id="as-karat" style="flex:1;min-width:90px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem">
+          <option value="999">عيار 999</option><option value="925" selected>عيار 925</option><option value="800">عيار 800</option>
+        </select>
+        <select id="as-dir" style="flex:1;min-width:80px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem">
+          <option value="above">يصعد لـ</option><option value="below">ينزل لـ</option>
+        </select>
+        <input type="number" id="as-price" placeholder="السعر" style="flex:1;min-width:80px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem"/>
+        <button onclick="addAlert('silver')" style="background:var(--gold);color:var(--text-dark);border:none;padding:8px 14px;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem">+</button>
+      </div>
+      <div id="alerts-silver"></div>
+    </div>
+
+    <!-- تنبيهات العملات -->
+    <div>
+      <div style="font-size:0.82rem;font-weight:700;color:var(--blue);margin-bottom:8px">💱 العملات</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+        <select id="ac-code" style="flex:1;min-width:90px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem">
+          <option value="USD">دولار</option><option value="EUR">يورو</option><option value="GBP">إسترليني</option><option value="SAR">ريال</option><option value="AED">درهم</option>
+        </select>
+        <select id="ac-dir" style="flex:1;min-width:80px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem">
+          <option value="above">يصعد لـ</option><option value="below">ينزل لـ</option>
+        </select>
+        <input type="number" id="ac-price" placeholder="السعر" style="flex:1;min-width:80px;background:#f5f5f5;border:1.5px solid #e0e0e0;padding:8px;border-radius:10px;font-family:'Cairo',sans-serif;font-size:0.8rem"/>
+        <button onclick="addAlert('cur')" style="background:var(--gold);color:var(--text-dark);border:none;padding:8px 14px;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif;font-size:0.8rem">+</button>
+      </div>
+      <div id="alerts-cur"></div>
+    </div>
+
+    <!-- حالة الإذن -->
+    <div id="notif-status" style="margin-top:16px;padding:10px;border-radius:10px;background:var(--surface-light);font-size:0.8rem;text-align:center;color:var(--text-muted)">
+      جار التحقق من حالة الإشعارات...
+    </div>
+    <button onclick="requestNotificationPermission()" style="width:100%;margin-top:8px;background:var(--gold);color:var(--text-dark);border:none;padding:12px;border-radius:10px;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif">
+      🔔 تفعيل الإشعارات
+    </button>
   </div>
 </div>
 
@@ -688,17 +822,23 @@ function showToast(msg,type='info',duration=3000){
   setTimeout(()=>{toast.classList.remove('show');setTimeout(()=>toast.remove(),300);},duration);
 }
 
-// ===== PRICE HISTORY =====
-const HISTORY_KEY='sor_price_history_v2';
-const HISTORY_DATES_KEY='sor_price_dates_v2';
+// ===== PRICE HISTORY (multi-period: 7d / 30d / 90d / 365d) =====
+const HISTORY_KEY='sor_price_history_v3';
+const HISTORY_DATES_KEY='sor_price_dates_v3';
+const MAX_HISTORY_DAYS=365;
+let chartPeriod=7; // الافتراضي 7 أيام
+
 function savePriceHistory(){
   localStorage.setItem(HISTORY_KEY,JSON.stringify(priceHistory));
   localStorage.setItem(HISTORY_DATES_KEY,JSON.stringify(chartDates));
 }
 function loadPriceHistory(){
   try{
-    const saved=localStorage.getItem(HISTORY_KEY);
-    const savedDates=localStorage.getItem(HISTORY_DATES_KEY);
+    // محاولة ترحيل البيانات القديمة
+    const oldData=localStorage.getItem('sor_price_history_v2');
+    const oldDates=localStorage.getItem('sor_price_dates_v2');
+    const saved=localStorage.getItem(HISTORY_KEY)||oldData;
+    const savedDates=localStorage.getItem(HISTORY_DATES_KEY)||oldDates;
     if(saved){priceHistory=JSON.parse(saved).filter(p=>typeof p==='number'&&!isNaN(p)&&p>0);}
     if(savedDates){chartDates=JSON.parse(savedDates);}
     if(!Array.isArray(priceHistory))priceHistory=[];
@@ -710,12 +850,24 @@ function addPriceToHistory(price){
   const today=new Date().toISOString().split('T')[0];
   if(chartDates.length===0||chartDates[chartDates.length-1]!==today){
     priceHistory.push(price);chartDates.push(today);
-    if(priceHistory.length>7){priceHistory.shift();chartDates.shift();}
+    // نحتفظ بـ 365 يوم كحد أقصى
+    if(priceHistory.length>MAX_HISTORY_DAYS){priceHistory.shift();chartDates.shift();}
     savePriceHistory();
   }else{
     const lastIdx=priceHistory.length-1;
     if(priceHistory[lastIdx]!==price){priceHistory[lastIdx]=price;savePriceHistory();}
   }
+}
+function getHistoryForPeriod(days){
+  if(priceHistory.length<=days)return{prices:priceHistory,dates:chartDates};
+  return{prices:priceHistory.slice(-days),dates:chartDates.slice(-days)};
+}
+function setChartPeriod(days){
+  chartPeriod=days;
+  document.querySelectorAll('.chart-period-btn').forEach(b=>{
+    b.classList.toggle('active',Number(b.dataset.days)===days);
+  });
+  drawMiniChart();
 }
 
 // ===== CHART =====
@@ -729,6 +881,10 @@ function drawMiniChart(){
   ctx.scale(dpr,dpr);
   const w=rect.width,h=rect.height,pad=12;
   ctx.clearRect(0,0,w,h);
+  const {prices:displayHistory}=getHistoryForPeriod(chartPeriod);
+  // نستخدم displayHistory بدل priceHistory في رسم الشارت
+  const origHistory=priceHistory;
+  priceHistory=displayHistory;
   if(priceHistory.length<2){
     ctx.strokeStyle='#2a2a2a';ctx.lineWidth=1;ctx.setLineDash([5,5]);
     for(let i=1;i<4;i++){const y=pad+(h-2*pad)*(i/4);ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(w-pad,y);ctx.stroke();}
@@ -737,7 +893,7 @@ function drawMiniChart(){
     ctx.fillText('📊 الرسم يبدأ غداً',w/2,h/2-8);
     ctx.font='11px "IBM Plex Mono"';ctx.fillStyle='#666';
     ctx.fillText('(يتم حفظ السعر يومياً)',w/2,h/2+12);
-    return;
+    priceHistory=origHistory;return;
   }
   const min=Math.min(...priceHistory),max=Math.max(...priceHistory);
   const range=max-min||1;
@@ -764,18 +920,21 @@ function drawMiniChart(){
     if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
   });
   ctx.stroke();
-  priceHistory.forEach((p,i)=>{
-    const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
-    const y=pad+(h-2*pad)*(1-(p-min)/range);
-    ctx.beginPath();ctx.arc(x,y,5,0,Math.PI*2);ctx.fillStyle=isUp?'rgba(76,175,80,0.3)':'rgba(244,67,54,0.3)';ctx.fill();
-    ctx.beginPath();ctx.arc(x,y,3.5,0,Math.PI*2);ctx.fillStyle='#ffc107';ctx.fill();
-    ctx.beginPath();ctx.arc(x,y,1.5,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();
-  });
+  // نخفي النقاط لو في كتير من البيانات (>30)
+  if(priceHistory.length<=30){
+    priceHistory.forEach((p,i)=>{
+      const x=pad+(w-2*pad)*(i/(priceHistory.length-1));
+      const y=pad+(h-2*pad)*(1-(p-min)/range);
+      ctx.beginPath();ctx.arc(x,y,3,0,Math.PI*2);ctx.fillStyle='#ffc107';ctx.fill();
+    });
+  }
   const lastPrice=priceHistory[priceHistory.length-1];
   const lastX=w-pad;
   const lastY=pad+(h-2*pad)*(1-(lastPrice-min)/range);
   ctx.fillStyle='#ffc107';ctx.font='bold 11px "IBM Plex Mono"';ctx.textAlign='right';
   ctx.fillText(fmt(lastPrice,0)+' ج',lastX,lastY-10);
+  // نرجع priceHistory الأصلي
+  priceHistory=origHistory;
 }
 
 // ===== DAILY CHANGE =====
@@ -853,13 +1012,17 @@ async function loadGold(){
     if(!goldPrices[14]&&goldPrices[24])goldPrices[14]=goldPrices[24]*(14/24);
     const g24=goldPrices[24];
     if(!g24)throw new Error('لا توجد بيانات');
-    const sellMap={24:d['24_sell'],21:d['21_sell'],18:d['18_sell'],14:d['14_sell']};
+    // الأقل = سعر الشراء (العميل يشتري بسعر أقل)، الأعلى = سعر البيع (العميل يبيع بسعر أعلى)
+    const rawSell={24:d['24_sell'],21:d['21_sell'],18:d['18_sell'],14:d['14_sell']};
     const rows=[{k:'عيار ٢٤',v:24,cls:'white'},{k:'عيار ٢١',v:21,cls:'gold'},{k:'عيار ١٨',v:18,cls:'gray'},{k:'عيار ١٤',v:14,cls:'white'}];
     const html=rows.map(row=>{
-      const buy=goldPrices[row.v];
-      const sell=sellMap[row.v]||(buy?buy*1.012:null);
-      if(!buy)return`<div class="price-row ${row.cls}"><div class="karat">${row.k}</div><div class="price" style="grid-column:2/4;color:var(--text-muted)">لا يوجد سعر</div></div>`;
-      return`<div class="price-row ${row.cls}"><div class="karat">${row.k}</div><div class="price">${fmt(buy,0)}</div><div class="price">${fmt(sell,0)}</div></div>`;
+      const p1=goldPrices[row.v];
+      const p2=parseFloat(rawSell[row.v])||(p1?p1*1.012:null);
+      if(!p1)return`<div class="price-row ${row.cls}"><div class="karat">${row.k}</div><div class="price" style="grid-column:2/4;color:var(--text-muted)">لا يوجد سعر</div></div>`;
+      // الأقل = شراء، الأعلى = بيع
+      const buyP=Math.min(p1,p2||p1);
+      const sellP=Math.max(p1,p2||p1*1.012);
+      return`<div class="price-row ${row.cls}"><div class="karat">${row.k}</div><div class="price">${fmt(buyP,0)}</div><div class="price">${fmt(sellP,0)}</div></div>`;
     }).join('');
     const list=$('gold-list');
     if(list)list.innerHTML=html;
@@ -868,10 +1031,36 @@ async function loadGold(){
     if($('g-kg'))$('g-kg').textContent=fmt(g24*1000,0)+' ج';
     if($('g-screen'))$('g-screen').textContent=d.ounceUsd?('$'+fmt(d.ounceUsd,0)):'—';
     if($('err-gold'))$('err-gold').style.display='none';
+    saveOfflineData('gold',d); // حفظ للـ offline
     addPriceToHistory(g24);
     calcSentiment();calcGold();calcInvestment();calcManualMfg();updatePortfolio();calcZakat();checkAlerts('gold');
     updateDailyChanges();drawMiniChart();saveDailyPrices();
-  }catch(e){console.error('Gold error:',e.message);if($('err-gold'))$('err-gold').style.display='block';}
+  }catch(e){
+    console.error('Gold error:',e.message);
+    // جرب تحمّل من الـ cache
+    const cached=loadOfflineData('gold');
+    if(cached&&cached.data){
+      console.log('[Offline] Using cached gold data');
+      const d=cached.data;
+      goldPrices={24:d[24]||0,21:d[21]||0,18:d[18]||0,14:d[14]||0};
+      // نفس منطق العرض بدون إخفاء الـ error
+      const rawSell={24:d['24_sell'],21:d['21_sell'],18:d['18_sell'],14:d['14_sell']};
+      const rows=[{k:'عيار ٢٤',v:24,cls:'white'},{k:'عيار ٢١',v:21,cls:'gold'},{k:'عيار ١٨',v:18,cls:'gray'},{k:'عيار ١٤',v:14,cls:'white'}];
+      const html=rows.map(row=>{
+        const p1=goldPrices[row.v];const p2=parseFloat(rawSell[row.v])||(p1?p1*1.012:null);
+        if(!p1)return`<div class="price-row ${row.cls}"><div class="karat">${row.k}</div><div class="price" style="grid-column:2/4;color:var(--text-muted)">لا يوجد سعر</div></div>`;
+        const buyP=Math.min(p1,p2||p1);const sellP=Math.max(p1,p2||p1*1.012);
+        return`<div class="price-row ${row.cls}"><div class="karat">${row.k}</div><div class="price">${fmt(buyP,0)}</div><div class="price">${fmt(sellP,0)}</div></div>`;
+      }).join('');
+      const list=$('gold-list');if(list)list.innerHTML=html;
+      if($('g-pound'))$('g-pound').textContent=fmt(goldPrices[21]*8,0)+' ج';
+      if($('g-oz'))$('g-oz').textContent=fmt(goldPrices[24]*31.1035,0)+' ج';
+      if($('err-gold'))$('err-gold').style.display='none';
+      updatePortfolio();calcGold();calcZakat();drawMiniChart();
+    }else{
+      if($('err-gold'))$('err-gold').style.display='block';
+    }
+  }
 }
 
 async function loadSilver(){
@@ -887,8 +1076,9 @@ async function loadSilver(){
       let prices=[val1,val2,val3].filter(p=>!isNaN(p)&&p>0);
       let buy=0,sell=0;
       if(prices.length===0)return`<div class="price-row white"><div class="karat">${row.k}</div><div class="price" style="grid-column:2/4;color:var(--text-muted)">لا يوجد سعر</div></div>`;
-      else if(prices.length===1){sell=prices[0];buy=sell*0.95;}
+      else if(prices.length===1){buy=prices[0];sell=buy*1.02;}
       else{buy=Math.min(...prices);sell=Math.max(...prices);}
+      // الأقل = شراء، الأعلى = بيع
       silverPrices[row.v]=buy;
       const cls=row.v==='925'?'gray':'white';
       return`<div class="price-row ${cls}"><div class="karat">${row.k}</div><div class="price">${fmt(buy,2)}</div><div class="price">${fmt(sell,2)}</div></div>`;
@@ -1006,61 +1196,42 @@ function savePortfolio(){if(!currentUserId)return;localStorage.setItem(getPortfo
 async function addPortfolio(){
   const g=parseFloat($('pf-grams').value),k=parseInt($('pf-karat').value),p=parseFloat($('pf-price').value);
   if(!g||!p||g<=0||p<=0){alert('اكتب الجرامات والسعر');return;}
-
-  const sb=getSupabase();
-  if(sb&&currentUserId){
-    // لو في user مسجل دخول، احفظ في Supabase أولاً وخد الـ id الحقيقي
-    try{
-      const {data,error}=await sb.from('portfolios').insert({user_id:currentUserId,grams:g,karat:k,buy_price:p}).select();
-      if(!error&&data&&data[0]){
-        portfolio.push({id:data[0].id,grams:g,karat:k,buyPrice:p});
-        $('pf-grams').value='';$('pf-price').value='';
-        savePortfolio();
-        updatePortfolio();
-        showToast('✅ تم الإضافة','success');
-        return;
-      }
-    }catch(e){console.error('[Sync] save error:',e);}
-  }
-
-  // Fallback: guest أو فشل Supabase
   const tempId=Date.now();
   portfolio.push({id:tempId,grams:g,karat:k,buyPrice:p});
   $('pf-grams').value='';$('pf-price').value='';
-  savePortfolio();
-  updatePortfolio();
-}
-
-async function removePortfolio(id){
-  // ابحث عن العنصر بـ String comparison عشان الـ id قد يكون string أو number
-  const itemIndex=portfolio.findIndex(x=>String(x.id)===String(id));
-  if(itemIndex===-1){console.log('[Portfolio] Item not found:',id);return;}
-
-  const removedItem=portfolio[itemIndex];
-
-  // لو user مسجل دخول، احذف من Supabase أولاً وانتظر التأكيد
   const sb=getSupabase();
   if(sb&&currentUserId){
     try{
-      const {error}=await sb.from('portfolios')
-        .delete()
-        .eq('id', removedItem.id)
-        .eq('user_id', currentUserId);
-      if(error){
-        console.log('[Portfolio] DB delete error:',error.message);
-        showToast('❌ خطأ في الحذف من السيرفر','error');
-        return; // لا تمسح من الـ array لو DB فشل
+      const {data,error}=await sb.from('portfolios').insert({user_id:currentUserId,grams:g,karat:k,buy_price:p}).select();
+      if(!error&&data&&data[0]){
+        const idx=portfolio.findIndex(x=>x.id===tempId);
+        if(idx!==-1)portfolio[idx].id=data[0].id;
+        savePortfolio();
       }
-      console.log('[Portfolio] Deleted from DB:',removedItem.id);
-    }catch(e){
-      console.log('[Portfolio] DB delete failed:',e.message);
-      showToast('❌ خطأ في الاتصال','error');
-      return;
-    }
+    }catch(e){console.error('[Sync] save error:',e);}
+  }
+  savePortfolio();updatePortfolio();
+}
+
+async function removePortfolio(id){
+  // id قد يكون string من الـ HTML onclick، نحوله لـ number أو نقارنه كـ string
+  const numId=Number(id);
+  const itemIndex=portfolio.findIndex(x=>Number(x.id)===numId);
+  if(itemIndex===-1){console.log('[Portfolio] Item not found:',id);return;}
+
+  const removedItem=portfolio[itemIndex];
+  portfolio.splice(itemIndex,1);
+
+  // حذف من Supabase أولاً لو موجود
+  const sb=getSupabase();
+  if(sb&&currentUserId&&removedItem.id){
+    try{
+      const {error}=await sb.from('portfolios').delete().eq('id',removedItem.id).eq('user_id',currentUserId);
+      if(error)console.log('[Portfolio] DB delete error:',error.message);
+      else console.log('[Portfolio] Deleted from DB:',removedItem.id);
+    }catch(e){console.log('[Portfolio] DB delete failed:',e.message);}
   }
 
-  // امسح من الـ array بعد تأكيد الـ DB
-  portfolio.splice(itemIndex,1);
   savePortfolio();
   updatePortfolio();
   showToast('🗑️ تم الحذف','info');
@@ -1215,6 +1386,124 @@ function checkAlerts(onlyType,rates){
   });
 }
 
+// ===== OFFLINE MODE =====
+const OFFLINE_GOLD_KEY='sor_offline_gold';
+const OFFLINE_SILVER_KEY='sor_offline_silver';
+const OFFLINE_CUR_KEY='sor_offline_cur';
+
+function saveOfflineData(type,data){
+  try{localStorage.setItem('sor_offline_'+type,JSON.stringify({data,ts:Date.now()}));}catch(e){}
+}
+function loadOfflineData(type){
+  try{
+    const saved=localStorage.getItem('sor_offline_'+type);
+    if(!saved)return null;
+    return JSON.parse(saved);
+  }catch(e){return null;}
+}
+function updateOfflineBanner(){
+  const banner=$('offline-banner');
+  if(!banner)return;
+  if(!navigator.onLine){banner.classList.add('show');}
+  else{banner.classList.remove('show');}
+}
+window.addEventListener('online',()=>{updateOfflineBanner();showToast('✅ عاد الاتصال بالإنترنت','success');loadAll();});
+window.addEventListener('offline',()=>{updateOfflineBanner();showToast('📵 انقطع الإنترنت — آخر أسعار محفوظة','error',5000);});
+
+// ===== SHARE PRICE =====
+function sharePrice(type){
+  let text='';
+  const now=new Date().toLocaleString('ar-EG',{timeZone:'Africa/Cairo',hour:'2-digit',minute:'2-digit'});
+  if(type==='gold'){
+    text=`🥇 أسعار الذهب في مصر - ${now}\n`;
+    text+=`عيار 24: ${goldPrices[24]?fmt(goldPrices[24],0)+' ج':'—'}\n`;
+    text+=`عيار 21: ${goldPrices[21]?fmt(goldPrices[21],0)+' ج':'—'}\n`;
+    text+=`عيار 18: ${goldPrices[18]?fmt(goldPrices[18],0)+' ج':'—'}\n`;
+    text+=`\n📱 سعر النهارده: https://seary-elnaharda.vercel.app`;
+  }else if(type==='silver'){
+    text=`🪙 أسعار الفضة في مصر - ${now}\n`;
+    text+=`عيار 999: ${silverPrices[999]?fmt(silverPrices[999],2)+' ج':'—'}\n`;
+    text+=`عيار 925: ${silverPrices[925]?fmt(silverPrices[925],2)+' ج':'—'}\n`;
+    text+=`\n📱 سعر النهارده: https://seary-elnaharda.vercel.app`;
+  }else{
+    text=`💱 أسعار العملات - ${now}\n`;
+    text+=`دولار: ${$('usd-official')?.textContent||'—'} ج\n`;
+    text+=`\n📱 سعر النهارده: https://seary-elnaharda.vercel.app`;
+  }
+
+  // Web Share API أولاً
+  if(navigator.share){
+    navigator.share({title:'سعر النهارده',text:text,url:'https://seary-elnaharda.vercel.app'}).catch(()=>{});
+    return;
+  }
+
+  // Fallback — عرض modal للاختيار
+  showShareModal(text);
+}
+
+function showShareModal(text){
+  // إنشاء modal مؤقت
+  const overlay=document.createElement('div');
+  overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:4000;display:flex;align-items:flex-end;justify-content:center;padding:16px';
+  overlay.innerHTML=`
+    <div style="background:#1a1a1a;border-radius:20px 20px 20px 20px;padding:20px;width:100%;max-width:400px;animation:slideUp 0.3s ease">
+      <div style="text-align:center;font-size:1rem;font-weight:700;color:#ffc107;margin-bottom:16px">📤 مشاركة السعر</div>
+      <div style="background:#0a0a0a;border-radius:10px;padding:12px;font-size:0.8rem;color:#888;margin-bottom:16px;line-height:1.8;white-space:pre-wrap">${text}</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px">
+        <button onclick="shareViaWhatsapp(\`${text.replace(/`/g,"'")}\`)" style="background:#25d366;color:#fff;border:none;padding:12px 8px;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;font-size:0.8rem">📱 واتساب</button>
+        <button onclick="shareViaFacebook()" style="background:#1877f2;color:#fff;border:none;padding:12px 8px;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;font-size:0.8rem">📘 فيسبوك</button>
+        <button onclick="copyToClipboard(\`${text.replace(/`/g,"'")}\`)" style="background:#2a2a2a;color:#fff;border:none;padding:12px 8px;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;font-size:0.8rem">📋 نسخ</button>
+      </div>
+      <button onclick="this.closest('[style*=fixed]').remove()" style="width:100%;background:#2a2a2a;color:#888;border:none;padding:12px;border-radius:12px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer">إلغاء</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  overlay.onclick=e=>{if(e.target===overlay)overlay.remove();};
+}
+function shareViaWhatsapp(text){
+  window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+}
+function shareViaFacebook(){
+  window.open('https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent('https://seary-elnaharda.vercel.app'),'_blank');
+}
+function copyToClipboard(text){
+  navigator.clipboard.writeText(text).then(()=>{showToast('✅ تم النسخ','success');}).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();showToast('✅ تم النسخ','success');
+  });
+}
+
+// ===== PUSH NOTIFICATIONS =====
+function updateNotifStatus(){
+  const el=$('notif-status');
+  const badge=$('notif-badge');
+  if(!('Notification' in window)){
+    if(el)el.textContent='❌ المتصفح لا يدعم الإشعارات';
+    return;
+  }
+  if(Notification.permission==='granted'){
+    if(el){el.textContent='✅ الإشعارات مفعّلة';el.style.color='var(--green)';}
+    if(badge)badge.classList.remove('show');
+  }else if(Notification.permission==='denied'){
+    if(el){el.textContent='🚫 الإشعارات محجوبة — افتح إعدادات المتصفح لتفعيلها';el.style.color='var(--red)';}
+    if(badge)badge.classList.add('show');
+  }else{
+    if(el){el.textContent='⚠️ اضغط لتفعيل الإشعارات';el.style.color='var(--gold)';}
+    if(badge)badge.classList.add('show');
+  }
+}
+async function requestNotificationPermission(){
+  if(!('Notification' in window)){showToast('المتصفح لا يدعم الإشعارات','error');return;}
+  if(Notification.permission==='granted'){showToast('✅ الإشعارات مفعّلة بالفعل','success');return;}
+  if(Notification.permission==='denied'){showToast('🚫 الإشعارات محجوبة — افتح إعدادات المتصفح','error',5000);return;}
+  const perm=await Notification.requestPermission();
+  updateNotifStatus();
+  if(perm==='granted'){
+    showToast('✅ تم تفعيل الإشعارات','success');
+    new Notification('سعر النهارده 🥇',{body:'هتوصلك إشعارات لما السعر يتغير!',icon:'/icons/icon-192x192.png'});
+  }else{
+    showToast('لم يتم السماح بالإشعارات','error');
+  }
+}
+
 // ===== AUTH =====
 function openLoginModal(){window.location.href='login.html';}
 function goToLogin(){window.location.href='login.html';}
@@ -1232,10 +1521,28 @@ if('serviceWorker' in navigator){
   });
 }
 
+// ===== SIDEBAR TAB 5 (Alerts) =====
+const _origShowSidebarTab=showSidebarTab;
+// نضيف m5 للـ showSidebarTab
+const origShowSidebarTab=showSidebarTab;
+window.showSidebarTab=function(i){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const panel=$(`m${i}`);if(panel)panel.classList.add('active');
+  document.querySelectorAll('.main-tabs .tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  document.querySelectorAll('.sidebar-tab').forEach(t=>t.classList.remove('active'));
+  if(i===5){const btn=$('tab-alerts');if(btn)btn.classList.add('active');updateNotifStatus();}
+  else if(i===3){const btn=$('tab-invest');if(btn)btn.classList.add('active');}
+  else if(i===4){const btn=$('tab-zakat');if(btn)btn.classList.add('active');}
+};
+
 // ===== INIT =====
 loadPriceHistory();
 loadSentimentVotes();
 renderAlerts();
+updateOfflineBanner();
+updateNotifStatus();
 loadAll();
 setInterval(loadAll,5*60*1000);
 </script>
