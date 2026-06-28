@@ -13,23 +13,23 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+      
       - name: Install dependencies
+        run: npm install
+
+      # خطوة حاسمة: إنشاء ملف الإعدادات والمنصة معاً
+      - name: Capacitor Init and Add Android
         run: |
-          npm install
-          npm install @capacitor/assets --save-dev
-      - name: Force Config and Assets
-        run: |
-          # إنشاء ملف الإعدادات برمجياً لضمان وجود الـ appId
-          echo '{"appId": "com.youssefmosaad.soralnaharda", "appName": "سعر النهاردة", "webDir": "www", "bundledWebRuntime": false}' > capacitor.config.json
-          # توليد الأيقونات
-          npx @capacitor/assets generate
-      - name: Build Android
-        run: |
-          npx cap add android || true
+          npx cap init searyelnaharda com.youssefmosaad.soralnaharda --web-dir www
+          npx cap add android
           npx cap sync android
+
+      - name: Build Android APK
+        run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
+
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
