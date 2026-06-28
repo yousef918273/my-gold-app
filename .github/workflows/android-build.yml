@@ -15,8 +15,10 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install
-      - name: Capacitor Sync
-        run: npx cap sync android
+      - name: Add Android Platform
+        run: |
+          npx cap add android
+          npx cap sync android
       - name: Build Android APK
         run: |
           cd android
