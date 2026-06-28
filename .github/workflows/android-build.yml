@@ -16,11 +16,12 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
-          # تثبيت أداة توليد الأيقونات
           npm install @capacitor/assets --save-dev
-      - name: Generate Icons and Splash
+      - name: Force Config and Assets
         run: |
-          # توليد الأيقونات باستخدام الصور التي رفعتها
+          # إنشاء ملف الإعدادات برمجياً لضمان وجود الـ appId
+          echo '{"appId": "com.youssefmosaad.soralnaharda", "appName": "سعر النهاردة", "webDir": "www", "bundledWebRuntime": false}' > capacitor.config.json
+          # توليد الأيقونات
           npx @capacitor/assets generate
       - name: Build Android
         run: |
