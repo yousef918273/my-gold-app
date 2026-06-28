@@ -1,8 +1,10 @@
 {
-  "appId": "com.youssefmosaad.soralnaharda",
-  "appName": "سعر النهارده",
-"webDir": "www"
-  "bundledWebRuntime": false,
+ {
+  "appId": "com.example.seary",
+  "appName": "searyelnaharda",
+  "webDir": ".",
+  "bundledWebRuntime": false
+}
   "server": {
     "androidScheme": "https",
     "iosScheme": "https"
