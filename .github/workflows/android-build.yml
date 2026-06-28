@@ -18,6 +18,9 @@ jobs:
       - name: Add Android Platform
         run: |
           npx cap add android
+      - name: Capacitor Sync
+        run: |
+          # هنا نجبره على المزامنة من المجلد الحالي "."
           npx cap sync android
       - name: Build Android APK
         run: |
