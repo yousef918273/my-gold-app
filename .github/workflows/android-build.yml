@@ -13,18 +13,15 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Prepare Web Assets
-        run: |
-          mkdir www
-          # نقل ملفاتك إلى المجلد الذي يبحث عنه Capacitor
-          cp index.html www/ || true
-          cp *.js www/ || true
-          cp *.css www/ || true
       - name: Install dependencies
         run: npm install
-      - name: Capacitor Sync
+      - name: Initialize Capacitor
+        # هذا الأمر يقوم بإنشاء الإعدادات برمجياً لضمان عدم وجود أخطاء في الملف المرفوع
         run: |
-          npx cap add android || true
+          npx cap init searyelnaharda com.youssefmosaad.soralnaharda --web-dir .
+      - name: Add Android Platform
+        run: |
+          npx cap add android
           npx cap sync android
       - name: Build Android APK
         run: |
