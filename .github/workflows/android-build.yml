@@ -15,14 +15,18 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install
-      - name: Clean and Initialize
+      - name: Fix Structure and Init
         run: |
-          # حذف أي ملفات أندرويد قديمة قد تسبب تعارضاً
+          # 1. إنشاء مجلد www رسمي
+          mkdir -p www
+          # 2. نقل كل ملفات المشروع داخل المجلد
+          # نستخدم find لنقل الملفات مع الحفاظ على الهيكلية
+          find . -maxdepth 1 -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" -o -name "*.json" \) -exec cp {} www/ \;
+          # 3. إنشاء ملف إعدادات جديد يشير إلى www
+          echo '{"appId": "com.youssefmosaad.soralnaharda", "appName": "سعر النهاردة", "webDir": "www", "bundledWebRuntime": false}' > capacitor.config.json
+      - name: Build and Sync
+        run: |
           rm -rf android
-          # إعادة تهيئة كاباسيتور ببيانات نظيفة
-          npx cap init searyelnaharda com.youssefmosaad.soralnaharda --web-dir .
-      - name: Add Android Platform
-        run: |
           npx cap add android
           npx cap sync android
       - name: Build Android APK
