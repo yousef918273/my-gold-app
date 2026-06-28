@@ -15,9 +15,11 @@ jobs:
           node-version: '18'
       - name: Install dependencies
         run: npm install
-      - name: Initialize Capacitor
-        # هذا الأمر يقوم بإنشاء الإعدادات برمجياً لضمان عدم وجود أخطاء في الملف المرفوع
+      - name: Clean and Initialize
         run: |
+          # حذف أي ملفات أندرويد قديمة قد تسبب تعارضاً
+          rm -rf android
+          # إعادة تهيئة كاباسيتور ببيانات نظيفة
           npx cap init searyelnaharda com.youssefmosaad.soralnaharda --web-dir .
       - name: Add Android Platform
         run: |
