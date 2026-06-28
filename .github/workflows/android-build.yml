@@ -14,23 +14,18 @@ jobs:
         with:
           node-version: '18'
       - name: Install dependencies
-        run: npm install
-      - name: Fix Structure and Init
         run: |
-          # 1. إنشاء مجلد www رسمي
-          mkdir -p www
-          # 2. نقل كل ملفات المشروع داخل المجلد
-          # نستخدم find لنقل الملفات مع الحفاظ على الهيكلية
-          find . -maxdepth 1 -type f \( -name "*.html" -o -name "*.js" -o -name "*.css" -o -name "*.json" \) -exec cp {} www/ \;
-          # 3. إنشاء ملف إعدادات جديد يشير إلى www
-          echo '{"appId": "com.youssefmosaad.soralnaharda", "appName": "سعر النهاردة", "webDir": "www", "bundledWebRuntime": false}' > capacitor.config.json
-      - name: Build and Sync
+          npm install
+          # تثبيت أداة توليد الأيقونات
+          npm install @capacitor/assets --save-dev
+      - name: Generate Icons and Splash
         run: |
-          rm -rf android
-          npx cap add android
+          # توليد الأيقونات باستخدام الصور التي رفعتها
+          npx @capacitor/assets generate
+      - name: Build Android
+        run: |
+          npx cap add android || true
           npx cap sync android
-      - name: Build Android APK
-        run: |
           cd android
           chmod +x gradlew
           ./gradlew assembleDebug
