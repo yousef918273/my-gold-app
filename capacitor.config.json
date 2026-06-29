@@ -1,32 +1,28 @@
 {
- {
- "appId": "com.youssefmosaad.soralnaharda",
+  "appId": "com.youssefmosaad.soralnaharda",
   "appName": "سعر النهاردة",
   "webDir": ".",
-  "bundledWebRuntime": false
-}
+  "bundledWebRuntime": false,
   "server": {
     "androidScheme": "https",
-    "iosScheme": "https"
+    "iosScheme": "https",
+    "cleartext": true
   },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 2500,
+      "launchShowDuration": 3000,
       "launchAutoHide": true,
-      "backgroundColor": "#f5f3ef",
+      "backgroundColor": "#0a0a0a",
       "androidSplashResourceName": "splash",
       "androidScaleType": "CENTER_CROP",
       "showSpinner": true,
       "androidSpinnerStyle": "large",
       "iosSpinnerStyle": "large",
-      "spinnerColor": "#b8860b"
+      "spinnerColor": "#ffc107"
     },
     "StatusBar": {
       "style": "DARK",
-      "backgroundColor": "#f5f3ef"
-    },
-    "PushNotifications": {
-      "presentationOptions": ["badge", "sound", "alert"]
+      "backgroundColor": "#0a0a0a"
     }
   }
 }
