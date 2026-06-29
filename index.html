@@ -1555,6 +1555,7 @@ const supabaseKey='sb_publishable_XYhvHo3cpN8IVII8PZ0GiQ_yzvHvUgl';
 const supabase=createClient(supabaseUrl,supabaseKey);
 window.supabase=supabase;
 
+// ===== AUTH UI UPDATE (FIXED) =====
 async function updateAuthUI(session){
   const sidebarName=document.getElementById('sidebarName');
   const sidebarEmail=document.getElementById('sidebarEmail');
@@ -1572,12 +1573,39 @@ async function updateAuthUI(session){
     const finalName=displayName||session.user.email||'';
     if(sidebarName)sidebarName.textContent=finalName;
     if(sidebarEmail)sidebarEmail.textContent=session.user.email||'';
+    
+    // FIX: Avatar loading with crossorigin and fallback
     if(sidebarAvatar){
       const avatarUrl=meta.avatar_url||meta.picture||'';
       if(avatarUrl){
-        sidebarAvatar.innerHTML=`<img src="${avatarUrl}" alt="avatar">`;
+        // Use a proxy or direct URL with error handling
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = function() {
+          sidebarAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar" crossorigin="anonymous" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'avatar-icon\\'>👤</span>'">`;
+        };
+        img.onerror = function() {
+          // Try without proxy if fails
+          sidebarAvatar.innerHTML = `<img src="${avatarUrl}" alt="avatar" onerror="this.style.display='none';this.parentElement.innerHTML='<span class=\\'avatar-icon\\'>👤</span>'">`;
+        };
+        img.src = avatarUrl;
+      } else {
+        sidebarAvatar.innerHTML='<span class="avatar-icon">👤</span>';
       }
     }
+    
+    setTimeout(()=>{if(window.loadPortfolioForUser)window.loadPortfolioForUser(session.user.id);},100);
+    if(loginBtn)loginBtn.style.display='none';
+    if(logoutBtn)logoutBtn.style.display='flex';
+  }else{
+    if(loginBtn)loginBtn.style.display='flex';
+    if(logoutBtn)logoutBtn.style.display='none';
+    if(sidebarName)sidebarName.textContent='زائر';
+    if(sidebarEmail)sidebarEmail.textContent='سجّل دخولك';
+    if(sidebarAvatar)sidebarAvatar.innerHTML='<span class="avatar-icon">👤</span>';
+    if(window.clearPortfolio)window.clearPortfolio();
+  }
+}
     setTimeout(()=>{if(window.loadPortfolioForUser)window.loadPortfolioForUser(session.user.id);},100);
     if(loginBtn)loginBtn.style.display='none';
     if(logoutBtn)logoutBtn.style.display='flex';
