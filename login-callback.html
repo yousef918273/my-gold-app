@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>جاري تسجيل الدخول... | سعر النهاردة</title>
+<meta name="theme-color" content="#0a0a0a">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#0a0a0a;color:#fff;font-family:'Cairo',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
+.spinner{width:50px;height:50px;border:3px solid rgba(255,193,7,0.3);border-top-color:#ffc107;border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+h1{font-size:1.3rem;margin-bottom:8px}
+p{color:#888;font-size:0.9rem}
+.error{color:#f44336;margin-top:16px;font-size:0.85rem;display:none}
+.retry-btn{background:#ffc107;color:#1a1a1a;border:none;padding:10px 24px;border-radius:8px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;margin-top:16px;display:none}
+</style>
+</head>
+<body>
+<div class="spinner"></div>
+<h1>جاري تسجيل الدخول...</h1>
+<p>استنى شوية بنعمل التحقق</p>
+<div class="error" id="errMsg"></div>
+<button class="retry-btn" id="retryBtn" onclick="window.location.href='login.html'">الرجوع لتسجيل الدخول</button>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabaseUrl='https://qgilfubcnavitfhqmidj.supabase.co';
+const supabaseKey='sb_publishable_XYhvHo3cpN8IVII8PZ0GiQ_yzvHvUgl';
+const supabase=createClient(supabaseUrl,supabaseKey);
+
+async function handleCallback() {
+  try {
+    // Get tokens from URL hash or query
+    const hash = window.location.hash;
+    const query = window.location.search;
+    
+    // Try to set session from URL
+    const { data, error } = await supabase.auth.getSession();
+    
+    if (error) {
+      // Try to exchange code if present
+      const code = new URLSearchParams(query).get('code');
+      if (code) {
+        const { data: exchangeData, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeError) throw exchangeError;
+        
+        if (exchangeData.session) {
+          window.location.href = 'index.html';
+          return;
+        }
+      }
+      throw error;
+    }
+    
+    if (data.session) {
+      window.location.href = 'index.html';
+    } else {
+      // Wait a bit and retry
+      setTimeout(async () => {
+        const { data: retryData } = await supabase.auth.getSession();
+        if (retryData.session) {
+          window.location.href = 'index.html';
+        } else {
+          showError('مش قادرين نسجل دخولك. جرب تاني.');
+        }
+      }, 2000);
+    }
+  } catch (err) {
+    showError('حدث خطأ: ' + (err.message || 'جرب تسجيل الدخول تاني'));
+  }
+}
+
+function showError(msg) {
+  document.querySelector('.spinner').style.display = 'none';
+  document.getElementById('errMsg').textContent = msg;
+  document.getElementById('errMsg').style.display = 'block';
+  document.getElementById('retryBtn').style.display = 'inline-block';
+}
+
+handleCallback();
+</script>
+</body>
+</html>
