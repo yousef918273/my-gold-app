@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-<title>تسجيل الدخول | سعر النهارده</title>
+<title>تسجيل الدخول | سعر النهاردة</title>
 <meta name="theme-color" content="#0a0a0a">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -31,23 +31,19 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
 
-/* Card */
 .auth-card{
   background:var(--surface);border-radius:var(--radius);width:100%;max-width:420px;
   padding:40px 32px;box-shadow:var(--shadow);border:1px solid var(--surface-light);
 }
 
-/* Brand */
 .brand{text-align:center;margin-bottom:32px}
 .brand a{text-decoration:none}
 .brand .logo{font-size:1.6rem;font-weight:900;color:var(--gold);letter-spacing:-0.5px}
 .brand .logo span{color:var(--text)}
 .brand .tagline{font-size:0.78rem;color:var(--text-muted);margin-top:8px;font-weight:500}
 
-/* Mode Title */
 .mode-title{text-align:center;font-size:1.1rem;font-weight:700;margin-bottom:24px;color:var(--text)}
 
-/* Form */
 .form-group{margin-bottom:16px}
 .form-group label{display:block;font-size:0.8rem;color:var(--text-muted);margin-bottom:6px;font-weight:600}
 .form-group input{
@@ -58,7 +54,6 @@ body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-h
 .form-group input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(255,193,7,0.1)}
 .form-group input::placeholder{color:#666}
 
-/* Buttons */
 .btn{
   width:100%;border:none;padding:13px;border-radius:var(--radius-sm);
   font-family:'Cairo',sans-serif;font-weight:700;font-size:0.95rem;cursor:pointer;
@@ -77,222 +72,256 @@ body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-h
 }
 .btn-outline:hover{background:rgba(255,193,7,0.1)}
 
-/* Divider */
 .divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--text-muted);font-size:0.75rem;font-weight:600}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--surface-light)}
 
-/* Toggle */
 .toggle{text-align:center;margin-top:18px;font-size:0.85rem;color:var(--text-muted)}
 .toggle a{color:var(--gold);text-decoration:none;font-weight:700;cursor:pointer}
 .toggle a:hover{text-decoration:underline}
 
-/* Messages */
 .error{background:rgba(244,67,54,0.1);border:1px solid rgba(244,67,54,0.3);border-radius:12px;padding:12px 14px;color:var(--red);font-size:0.82rem;margin-bottom:16px;display:none;font-weight:600}
 .success{background:rgba(76,175,80,0.1);border:1px solid rgba(76,175,80,0.3);border-radius:12px;padding:12px 14px;color:var(--green);font-size:0.82rem;margin-bottom:16px;display:none;font-weight:600}
 
-/* Forgot Password Link */
 .forgot-link{text-align:center;margin:12px 0;font-size:0.82rem}
 .forgot-link a{color:var(--text-muted);text-decoration:none;cursor:pointer;transition:color 0.2s}
 .forgot-link a:hover{color:var(--gold);text-decoration:underline}
 
-/* Footer */
 .footer-note{text-align:center;font-size:0.68rem;color:var(--text-muted);margin-top:24px;line-height:1.6}
 .footer-note a{color:var(--gold);text-decoration:none}
 .footer-note a:hover{text-decoration:underline}
 
-/* Spinner */
 .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.4);border-top-color:#fff;border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 .hidden{display:none !important}
 
-/* Back link */
 .back-link{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:20px;font-size:0.85rem;color:var(--text-muted);text-decoration:none;transition:color 0.2s}
 .back-link:hover{color:var(--gold)}
 .back-link svg{width:18px;height:18px}
 
-/* ===== FORGOT PASSWORD MODAL ===== */
 .modal-overlay{
   position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:3000;
   display:none;align-items:center;justify-content:center;padding:16px;
 }
 .modal-overlay.open{display:flex}
-.modal-card{
-  background:var(--surface);border-radius:var(--radius);padding:28px;width:100%;max-width:400px;
-  color:var(--text);animation:slideUp 0.3s ease;border:1px solid var(--surface-light);
+.modal{
+  background:var(--surface);border-radius:var(--radius);width:100%;max-width:400px;
+  padding:28px;border:1px solid var(--surface-light);box-shadow:var(--shadow);
 }
-@keyframes slideUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.modal-card h2{font-size:1.1rem;margin-bottom:8px;color:var(--text);text-align:center}
-.modal-card p{font-size:0.82rem;color:var(--text-muted);text-align:center;margin-bottom:20px}
-.modal-card input{
-  width:100%;background:var(--surface-light);border:1.5px solid #3a3a3a;
-  color:var(--text);padding:13px 16px;border-radius:var(--radius-sm);
-  font-family:'Cairo',sans-serif;font-size:0.92rem;margin-bottom:16px;
-}
-.modal-card input:focus{outline:none;border-color:var(--gold)}
-.modal-card .btn-row{display:flex;gap:8px;margin-top:8px}
-.modal-card .btn-row button{flex:1;padding:12px;border-radius:10px;border:none;font-weight:700;cursor:pointer;font-family:'Cairo',sans-serif}
-.modal-card .btn-save{background:var(--gold);color:var(--text-dark)}
-.modal-card .btn-cancel{background:var(--surface-light);color:var(--text)}
+.modal h3{text-align:center;font-size:1.05rem;margin-bottom:8px;color:var(--text)}
+.modal p{text-align:center;font-size:0.82rem;color:var(--text-muted);margin-bottom:20px;line-height:1.5}
+.modal .form-group{margin-bottom:14px}
+.modal .btn-save{background:var(--gold);color:var(--text-dark);border:none;padding:12px;border-radius:var(--radius-sm);font-family:'Cairo',sans-serif;font-weight:700;font-size:0.9rem;cursor:pointer;width:100%}
+.modal .btn-save:hover{background:var(--gold-dark)}
+.modal .btn-cancel{background:transparent;color:var(--text-muted);border:none;padding:10px;font-family:'Cairo',sans-serif;font-size:0.85rem;cursor:pointer;width:100%;margin-top:8px}
+.modal .btn-cancel:hover{color:var(--text)}
 
-@media (max-width:480px){
-  .auth-card{padding:32px 24px}
-  .brand .logo{font-size:1.4rem}
-}
+/* App-specific styles */
+.app-hint{background:rgba(255,193,7,0.1);border:1px solid rgba(255,193,7,0.3);border-radius:12px;padding:12px 14px;color:var(--gold);font-size:0.82rem;margin-bottom:16px;display:none;font-weight:600;text-align:center}
 </style>
-<base target="_blank">
 </head>
 <body>
 
-<!-- Forgot Password Modal -->
-<div class="modal-overlay" id="forgotModal">
-  <div class="modal-card">
-    <h2>🔐 نسيت كلمة المرور؟</h2>
-    <p>اكتب بريدك الإلكتروني وهنبعتلك رابط إعادة التعيين</p>
-    <input type="email" id="forgot-email" placeholder="your@email.com">
-    <div class="btn-row">
-      <button class="btn-cancel" onclick="closeForgotModal()">إلغاء</button>
-      <button class="btn-save" onclick="sendResetEmail()">إرسال الرابط</button>
-    </div>
-    <div class="success" id="forgot-success" style="margin-top:12px"></div>
-    <div class="error" id="forgot-error" style="margin-top:12px"></div>
-  </div>
-</div>
-
-<!-- Main Auth Card -->
 <div class="auth-card">
   <div class="brand">
     <a href="index.html">
-      <div class="logo">سعر <span>النهارده</span></div>
-      <div class="tagline">أسعار الذهب والعملات في مصر لحظة بلحظة</div>
+      <div class="logo">سعر <span>النهاردة</span> 🥇</div>
+      <div class="tagline">أسعار الذهب والفضة والعملات في مصر</div>
     </a>
   </div>
 
-  <div class="error" id="err"></div>
-  <div class="success" id="succ"></div>
+  <div class="app-hint" id="appHint">📱 جاري فتح تطبيق Google...</div>
+  <div class="error" id="errMsg"></div>
+  <div class="success" id="succMsg"></div>
 
   <div class="mode-title" id="modeTitle">تسجيل الدخول</div>
 
-  <div class="form-group">
-    <label for="email">البريد الإلكتروني</label>
-    <input type="email" id="email" placeholder="your@email.com" autocomplete="email">
-  </div>
-
-  <div class="form-group">
-    <label for="pass">كلمة المرور</label>
-    <input type="password" id="pass" placeholder="••••••••" autocomplete="current-password">
-  </div>
-
   <div class="form-group hidden" id="nameWrap">
-    <label for="name">الاسم الكامل</label>
-    <input type="text" id="name" placeholder="محمد أحمد" autocomplete="name">
+    <label>الاسم</label>
+    <input type="text" id="name" placeholder="اكتب اسمك">
   </div>
 
-  <button class="btn btn-gold" id="actionBtn" onclick="handleAction()">دخول</button>
+  <div class="form-group">
+    <label>البريد الإلكتروني</label>
+    <input type="email" id="email" placeholder="example@email.com">
+  </div>
 
-  <!-- Forgot Password Link -->
+  <div class="form-group">
+    <label>كلمة المرور</label>
+    <input type="password" id="pass" placeholder="******">
+  </div>
+
   <div class="forgot-link" id="forgotWrap">
     <a onclick="openForgotModal()">نسيت كلمة المرور؟</a>
   </div>
 
+  <button class="btn btn-gold" id="actionBtn" onclick="handleAction()">دخول</button>
+
   <div class="toggle">
-    <span id="toggleText">لسه معندكش حساب؟</span>
+    <span id="toggleText">مش مسجل؟</span>
     <a onclick="toggleMode()" id="toggleLink">سجّل جديد</a>
   </div>
 
   <div class="divider">أو</div>
 
-  <button class="btn btn-google" onclick="googleLogin()">
-    <svg width="18" height="18" viewBox="0 0 24 24">
-      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.21 3.32v2.77h3.57c2.1-1.93 3.3-4.78 3.3-8.1z"/>
-      <path fill="#34A853" d="M12 23c2.97 0 5.46-1 7.28-2.69l-3.57-2.77c-.99.69-2.26 1.1-3.71 1.1-2.87 0-5.3-1.93-6.17-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-      <path fill="#FBBC05" d="M5.83 14.11a7.11 7.11 0 0 1 0-4.22V7.05H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.95l3.65-2.84z"/>
-      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.05l3.65 2.84c.87-2.6 3.3-4.51 6.17-4.51z"/>
-    </svg>
-    تسجيل دخول بجوجل
+  <button class="btn btn-google" id="googleBtn" onclick="googleLogin()">
+    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    <span id="googleBtnText">الدخول بحساب Google</span>
   </button>
 
-  <div class="footer-note">
-    بتسجيل الدخول، بتوافق على <a href="terms-of-service.html">شروط الاستخدام</a> و <a href="privacy-policy.html">سياسة الخصوصية</a>.
-  </div>
-
-  <!-- Back to Home -->
   <a href="index.html" class="back-link">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
     الرجوع للرئيسية
   </a>
+
+  <div class="footer-note">
+    بتسجيل الدخول، أنت موافق على <a href="terms-of-service.html">الشروط</a> و <a href="privacy-policy.html">السياسة</a>
+  </div>
 </div>
 
+<!-- Forgot Password Modal -->
+<div class="modal-overlay" id="forgotModal">
+  <div class="modal">
+    <h3>🔐 نسيت كلمة المرور؟</h3>
+    <p>اكتب بريدك الإلكتروني وهنبعتلك رابط إعادة التعيين</p>
+    <div class="error" id="forgot-error" style="display:none;margin-bottom:12px"></div>
+    <div class="success" id="forgot-success" style="display:none;margin-bottom:12px"></div>
+    <div class="form-group">
+      <input type="email" id="forgot-email" placeholder="example@email.com">
+    </div>
+    <button class="btn-save" onclick="sendResetEmail()">إرسال الرابط</button>
+    <button class="btn-cancel" onclick="closeForgotModal()">إلغاء</button>
+  </div>
+</div>
+
+<!-- Supabase -->
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabaseUrl='https://qgilfubcnavitfhqmidj.supabase.co';
+const supabaseKey='sb_publishable_XYhvHo3cpN8IVII8PZ0GiQ_yzvHvUgl';
+const supabase=createClient(supabaseUrl,supabaseKey);
+window.supabase=supabase;
 
-const supabaseUrl = 'https://qgilfubcnavitfhqmidj.supabase.co';
-const supabaseKey = 'sb_publishable_XYhvHo3cpN8IVII8PZ0GiQ_yzvHvUgl';
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-const $ = id => document.getElementById(id);
-let isLogin = true;
-
-async function checkSession() {
-  const { data: { session } } = await supabase.auth.getSession();
-  if (session) window.location.href = 'index.html';
-}
-checkSession();
-
-function showErr(msg) {
-  $('err').textContent = msg;
-  $('err').style.display = 'block';
-  $('succ').style.display = 'none';
-}
-
-function showSucc(msg) {
-  $('succ').textContent = msg;
-  $('succ').style.display = 'block';
-  $('err').style.display = 'none';
-}
-
-function clearMsgs() {
-  $('err').style.display = 'none';
-  $('succ').style.display = 'none';
-}
-
-function setLoad(btn, loading, txt) {
-  if (loading) {
-    btn.disabled = true;
-    btn.innerHTML = txt + ' <span class="spinner"></span>';
-  } else {
-    btn.disabled = false;
-    btn.textContent = txt;
+// Check if already logged in
+supabase.auth.getSession().then(({data:{session}})=>{
+  if(session&&session.user){
+    window.location.href='index.html';
   }
+});
+</script>
+
+<script>
+const $=id=>document.getElementById(id);
+let isLogin=true;
+
+function showErr(msg){$('errMsg').textContent=msg;$('errMsg').style.display='block';$('succMsg').style.display='none';}
+function showSucc(msg){$('succMsg').textContent=msg;$('succMsg').style.display='block';$('errMsg').style.display='none';}
+function clearMsgs(){$('errMsg').style.display='none';$('succMsg').style.display='none';}
+
+function setLoad(btn,loading,text){
+  if(loading){btn.disabled=true;btn.innerHTML='<span class="spinner"></span> '+text;}
+  else{btn.disabled=false;btn.innerHTML=text;}
 }
 
-// ===== TOGGLE LOGIN/SIGNUP =====
-window.toggleMode = function() {
-  isLogin = !isLogin;
-  $('modeTitle').textContent = isLogin ? 'تسجيل الدخول' : 'إنشاء حساب جديد';
-  $('actionBtn').textContent = isLogin ? 'دخول' : 'إنشاء حساب';
-  $('toggleText').textContent = isLogin ? 'لسه معندكش حساب؟' : 'عندك حساب بالفعل؟';
-  $('toggleLink').textContent = isLogin ? 'سجّل جديد' : 'سجّل دخول';
-  $('nameWrap').classList.toggle('hidden', isLogin);
-  $('forgotWrap').classList.toggle('hidden', !isLogin);
+function toggleMode(){
+  isLogin=!isLogin;
+  $('modeTitle').textContent=isLogin?'تسجيل الدخول':'إنشاء حساب جديد';
+  $('actionBtn').textContent=isLogin?'دخول':'إنشاء حساب';
+  $('toggleText').textContent=isLogin?'مش مسجل؟':'مسجل بالفعل؟';
+  $('toggleLink').textContent=isLogin?'سجّل جديد':'سجّل دخول';
+  $('nameWrap').classList.toggle('hidden',isLogin);
+  $('forgotWrap').classList.toggle('hidden',!isLogin);
   clearMsgs();
-};
+}
 
-// ===== GOOGLE LOGIN =====
+// Detect if running in Capacitor app
+function isCapacitorApp(){
+  return window.Capacitor!==undefined || (window.Android!==undefined) || 
+         navigator.userAgent.includes('Capacitor') || 
+         (typeof window !== 'undefined' && window.webkit && window.webkit.messageHandlers);
+}
+
+// ===== GOOGLE LOGIN (Fixed for Mobile App) =====
 window.googleLogin = async function() {
+  const btn = $('googleBtn');
+  const originalText = btn.innerHTML;
+  
   try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/index.html',
-        queryParams: { prompt: 'select_account' }
+    // Check if running in Capacitor app
+    if (isCapacitorApp()) {
+      // Use native browser for OAuth in Capacitor
+      $('appHint').style.display = 'block';
+      showSucc('جاري فتح المتصفح للمصادقة...');
+      
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: 'https://youssefmosaad.github.io/soralnaharda/login-callback.html',
+          queryParams: { 
+            prompt: 'select_account',
+            access_type: 'offline'
+          }
+        }
+      });
+      
+      if (error) throw error;
+      
+      // If URL is returned, open it in system browser
+      if (data && data.url) {
+        // For Capacitor, we need to open external browser
+        if (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Browser) {
+          await window.Capacitor.Plugins.Browser.open({ url: data.url });
+        } else {
+          window.location.href = data.url;
+        }
       }
-    });
-    if (error) throw error;
+    } else {
+      // Web version - normal flow
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin + '/index.html',
+          queryParams: { prompt: 'select_account' }
+        }
+      });
+      if (error) throw error;
+    }
   } catch (err) {
+    $('appHint').style.display = 'none';
     showErr('حدث خطأ أثناء الاتصال بجوجل: ' + (err.message || ''));
+    btn.innerHTML = originalText;
+    btn.disabled = false;
   }
 };
+
+// Handle OAuth callback
+async function handleOAuthCallback() {
+  const hash = window.location.hash;
+  const query = window.location.search;
+  
+  if (hash.includes('access_token') || query.includes('code')) {
+    showSucc('جاري تسجيل الدخول...');
+    
+    // Exchange the code for session
+    const { data, error } = await supabase.auth.exchangeCodeForSession(
+      new URLSearchParams(query).get('code')
+    );
+    
+    if (error) {
+      showErr('فشل تسجيل الدخول: ' + error.message);
+      return;
+    }
+    
+    if (data && data.session) {
+      window.location.href = 'index.html';
+    }
+  }
+}
+
+// Check for OAuth callback on load
+if (window.location.search.includes('code=') || window.location.hash.includes('access_token')) {
+  handleOAuthCallback();
+}
 
 // ===== SAVE PROFILE =====
 async function saveProfile(userId, name, email) {
@@ -375,9 +404,16 @@ window.sendResetEmail = async function() {
   setLoad(btn, true, 'جار الإرسال');
 
   try {
+    // Use app-specific redirect URL for mobile
+    const isApp = isCapacitorApp();
+    const redirectUrl = isApp 
+      ? 'https://youssefmosaad.github.io/soralnaharda/reset-password.html'
+      : window.location.origin + '/login.html';
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: window.location.origin + '/login.html'
+      redirectTo: redirectUrl
     });
+    
     if (error) throw error;
 
     successEl.textContent = '✅ تم إرسال رابط إعادة التعيين! اتفحص بريدك الإلكتروني.';
